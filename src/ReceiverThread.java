@@ -3,7 +3,6 @@ import CMPC3M06.AudioPlayer;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -13,19 +12,18 @@ import java.util.Vector;
 public class ReceiverThread implements Runnable{
 
     private static DatagramSocket receiving_socket;
-    private AudioPlayer player;
-    private Vector<byte[]> voiceVector = new Vector<byte[]>();
+    private AudioPlayer mPlayer;
 
     public void start(){
         Thread thread = new Thread(this);
         thread.start();
     }
 
-    public void run (){
-
+    public void run ()
+    {
         try
         {
-             player = new AudioPlayer();
+             mPlayer = new AudioPlayer();
         }
         catch (LineUnavailableException ex)
         {
@@ -69,7 +67,7 @@ public class ReceiverThread implements Runnable{
 
                 receiving_socket.receive(packet);
 
-                player.playBlock(packet.getData());
+                mPlayer.playBlock(packet.getData());
             }
             catch (SocketTimeoutException e)
             {
@@ -80,6 +78,8 @@ public class ReceiverThread implements Runnable{
                 System.out.println("ERROR: TextReceiver: Some random IO error occured!");
                 e.printStackTrace();
             }
+
+
         }
 
         //Close the socket

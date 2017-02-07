@@ -3,7 +3,6 @@ import CMPC3M06.AudioRecorder;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
-import java.util.Vector;
 
 /**
  * Created by thomaspachico on 07/02/2017.
@@ -11,11 +10,11 @@ import java.util.Vector;
 
 public class SenderThread implements Runnable {
 
-    private static DatagramSocket sending_socket;
-    private Vector<byte[]> voiceVector = new Vector<byte[]>();
     private static final int RECORDING_TIME = 35;
     private static final int PACKET_SIZE = 512;
-    private AudioRecorder recorder;
+
+    private static DatagramSocket mSendingSocket;
+    private AudioRecorder mRecorder;
     private String mHostname;
 
     public SenderThread(String hostname) {
@@ -38,6 +37,7 @@ public class SenderThread implements Runnable {
         try
         {
             clientIP = InetAddress.getByName(mHostname);
+            System.out.println(clientIP.toString());
         }
         catch (UnknownHostException e)
         {
@@ -55,7 +55,7 @@ public class SenderThread implements Runnable {
         //DatagramSocket sending_socket;
         try
         {
-            sending_socket = new DatagramSocket();
+            mSendingSocket = new DatagramSocket();
         }
         catch (SocketException e)
         {
@@ -71,7 +71,7 @@ public class SenderThread implements Runnable {
         System.out.println("Recording...");
         try
         {
-            recorder = new AudioRecorder();
+            mRecorder = new AudioRecorder();
         } catch (LineUnavailableException ex)
         {
             //TODO handle LineUnavailable exception
@@ -81,9 +81,9 @@ public class SenderThread implements Runnable {
         {
             for (int i = 0; i < Math.ceil(RECORDING_TIME / 0.032); i++)
             {
-                byte[] data = recorder.getBlock();
+                byte[] data = mRecorder.getBlock();
                 DatagramPacket packet = new DatagramPacket(data, PACKET_SIZE, clientIP, PORT);
-                sending_socket.send(packet);
+                mSendingSocket.send(packet);
             }
 
         }
@@ -93,12 +93,12 @@ public class SenderThread implements Runnable {
         }
 
         //Close audio input
-        recorder.close();
+        mRecorder.close();
 
-        if (!sending_socket.isClosed())
+        if (!mSendingSocket.isClosed())
         {
             //Close the socket
-            sending_socket.close();
+            mSendingSocket.close();
         }
         System.out.println("Finished.");
     }
