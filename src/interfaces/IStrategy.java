@@ -7,7 +7,6 @@ import java.util.Vector;
  */
 public interface IStrategy
 {
-
     public Vector<byte[]> getVoiceVector();
     public void addPacket(byte[] data);
     public void handlePacketLoss();
