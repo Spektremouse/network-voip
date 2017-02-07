@@ -86,7 +86,6 @@ public class SenderThread implements Runnable {
                 DatagramPacket packet = new DatagramPacket(data, PACKET_SIZE, clientIP, PORT);
                 mSendingSocket.send(packet);
             }
-
         }
         catch (IOException ex)
         {

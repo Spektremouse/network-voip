@@ -16,7 +16,7 @@ import java.util.Vector;
 
 public class ReceiverThread implements Runnable {
 
-    private static final int TIMEOUT = 320;
+    private static final int TIMEOUT = 32;
     private static final int PORT = 55321;
 
     private static DatagramSocket2 mReceivingSocket;
@@ -87,22 +87,19 @@ public class ReceiverThread implements Runnable {
                 e.printStackTrace();
             }
 
-            if(mStrategy.getVoiceVector().size() > 9)
+            Iterator<byte[]> voiceItr = mStrategy.getVoiceVector().iterator();
+            try
             {
-                Iterator<byte[]> voiceItr = mStrategy.getVoiceVector().iterator();
-                try
+                while (voiceItr.hasNext())
                 {
-                    while (voiceItr.hasNext())
-                    {
-                        mPlayer.playBlock(voiceItr.next());
-                    }
+                    mPlayer.playBlock(voiceItr.next());
                 }
-                catch (IOException ex)
-                {
-
-                }
-                mStrategy.getVoiceVector().clear();
             }
+            catch (IOException ex)
+            {
+
+            }
+            mStrategy.getVoiceVector().clear();
         }
 
         //Close the socket

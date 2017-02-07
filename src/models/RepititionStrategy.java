@@ -26,6 +26,10 @@ public class RepititionStrategy implements IStrategy {
     @Override
     public void handlePacketLoss()
     {
-        mVoiceVector.add(mVoiceVector.lastElement());
+        if(mVoiceVector.size() != 0 )
+        {
+            mVoiceVector.add(mVoiceVector.lastElement());
+
+        }
     }
 }

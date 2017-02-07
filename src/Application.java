@@ -12,7 +12,7 @@ public class Application {
         FillingStrategy fill = new FillingStrategy();
         RepititionStrategy repeat = new RepititionStrategy();
 
-        ReceiverThread receiver = new ReceiverThread(splice);
+        ReceiverThread receiver = new ReceiverThread(fill);
         SenderThread sender = new SenderThread("192.168.0.21");
 
         receiver.start();
