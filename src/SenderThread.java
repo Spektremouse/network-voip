@@ -1,4 +1,5 @@
 import CMPC3M06.AudioRecorder;
+import uk.ac.uea.cmp.voip.DatagramSocket2;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -12,8 +13,9 @@ public class SenderThread implements Runnable {
 
     private static final int RECORDING_TIME = 35;
     private static final int PACKET_SIZE = 512;
+    private static final int PORT = 55321;
 
-    private static DatagramSocket mSendingSocket;
+    private static DatagramSocket2 mSendingSocket;
     private AudioRecorder mRecorder;
     private String mHostname;
 
@@ -29,9 +31,6 @@ public class SenderThread implements Runnable {
     public void run() {
         System.out.println("Sending...");
 
-        //***************************************************
-        //Port to send to
-        int PORT = 55321;
         //IP ADDRESS to send to
         InetAddress clientIP = null;
         try
@@ -55,7 +54,7 @@ public class SenderThread implements Runnable {
         //DatagramSocket sending_socket;
         try
         {
-            mSendingSocket = new DatagramSocket();
+            mSendingSocket = new DatagramSocket2();
         }
         catch (SocketException e)
         {

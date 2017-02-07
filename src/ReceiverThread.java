@@ -1,18 +1,27 @@
 import CMPC3M06.AudioPlayer;
+import uk.ac.uea.cmp.voip.DatagramSocket2;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
  * Created by thomaspachico on 07/02/2017.
  */
 
-public class ReceiverThread implements Runnable{
+public class ReceiverThread implements Runnable {
 
-    private static DatagramSocket receiving_socket;
+    private static final int TIMEOUT = 320;
+    private static final int PORT = 55321;
+
+    private static DatagramSocket2 mReceivingSocket;
     private AudioPlayer mPlayer;
+    private IStrategy mStrategy;
+
+    Vector<byte[]> mVoiceVector = new Vector<byte[]>();
+
 
     public void start(){
         Thread thread = new Thread(this);
@@ -32,7 +41,6 @@ public class ReceiverThread implements Runnable{
 
         //***************************************************
         //Port to open socket on
-        int PORT = 55321;
         //***************************************************
 
         //***************************************************
@@ -41,8 +49,8 @@ public class ReceiverThread implements Runnable{
         //DatagramSocket receiving_socket;
         try
         {
-            receiving_socket = new DatagramSocket(PORT);
-            receiving_socket.setSoTimeout(3000);
+            mReceivingSocket = new DatagramSocket2(PORT);
+            mReceivingSocket.setSoTimeout(TIMEOUT);
         }
         catch (SocketException e)
         {
@@ -65,9 +73,9 @@ public class ReceiverThread implements Runnable{
                 byte[] data = new byte[512];
                 DatagramPacket packet = new DatagramPacket(data, 0, 512);
 
-                receiving_socket.receive(packet);
+                mReceivingSocket.receive(packet);
 
-                mPlayer.playBlock(packet.getData());
+                mVoiceVector.add(packet.getData());
             }
             catch (SocketTimeoutException e)
             {
@@ -79,13 +87,29 @@ public class ReceiverThread implements Runnable{
                 e.printStackTrace();
             }
 
+            if(mVoiceVector.size() > 9)
+            {
+                Iterator<byte[]> voiceItr = mVoiceVector.iterator();
+                try
+                {
+                    while (voiceItr.hasNext())
+                    {
+                        mPlayer.playBlock(voiceItr.next());
+                    }
+                }
+                catch (IOException ex)
+                {
+
+                }
+                mVoiceVector.clear();
+            }
 
         }
 
         //Close the socket
-        if(!receiving_socket.isClosed())
+        if(!mReceivingSocket.isClosed())
         {
-            receiving_socket.close();
+            mReceivingSocket.close();
         }
         //***************************************************
     }
