@@ -1,7 +1,12 @@
+package models;
+import interfaces.IStrategy;
+
+
 /**
  * Created by thomaspachico on 07/02/2017.
  */
-public class RepititionStrategy implements  IStrategy {
+public class FillingStrategy implements IStrategy
+{
     @Override
     public void doWork() {
 

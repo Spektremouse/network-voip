@@ -1,5 +1,8 @@
+package models;
+
 import CMPC3M06.AudioPlayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
+import interfaces.IStrategy;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
@@ -20,7 +23,10 @@ public class ReceiverThread implements Runnable {
     private AudioPlayer mPlayer;
     private IStrategy mStrategy;
 
-    Vector<byte[]> mVoiceVector = new Vector<byte[]>();
+    public ReceiverThread(IStrategy strategy)
+    {
+        mStrategy = strategy;
+    }
 
 
     public void start(){
@@ -40,13 +46,7 @@ public class ReceiverThread implements Runnable {
         }
 
         //***************************************************
-        //Port to open socket on
-        //***************************************************
-
-        //***************************************************
         //Open a socket to receive from on port PORT
-
-        //DatagramSocket receiving_socket;
         try
         {
             mReceivingSocket = new DatagramSocket2(PORT);
@@ -69,17 +69,17 @@ public class ReceiverThread implements Runnable {
         {
             try
             {
-                //Receive a DatagramPacket (note that the string cant be more than 80 chars)
                 byte[] data = new byte[512];
                 DatagramPacket packet = new DatagramPacket(data, 0, 512);
 
                 mReceivingSocket.receive(packet);
 
-                mVoiceVector.add(packet.getData());
+                mStrategy.addPacket(packet.getData());
             }
             catch (SocketTimeoutException e)
             {
                 System.out.println("Timeout.");
+                mStrategy.handlePacketLoss();
             }
             catch (IOException e)
             {
@@ -87,9 +87,9 @@ public class ReceiverThread implements Runnable {
                 e.printStackTrace();
             }
 
-            if(mVoiceVector.size() > 9)
+            if(mStrategy.getVoiceVector().size() > 9)
             {
-                Iterator<byte[]> voiceItr = mVoiceVector.iterator();
+                Iterator<byte[]> voiceItr = mStrategy.getVoiceVector().iterator();
                 try
                 {
                     while (voiceItr.hasNext())
@@ -101,9 +101,8 @@ public class ReceiverThread implements Runnable {
                 {
 
                 }
-                mVoiceVector.clear();
+                mStrategy.getVoiceVector().clear();
             }
-
         }
 
         //Close the socket
@@ -111,7 +110,6 @@ public class ReceiverThread implements Runnable {
         {
             mReceivingSocket.close();
         }
-        //***************************************************
     }
 }
 

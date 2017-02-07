@@ -1,7 +1,9 @@
+package models;
+
 /**
  * Created by thomaspachico on 07/02/2017.
  */
-public interface IStrategy
+public class Interleaver
 {
-    public void doWork();
+
 }
