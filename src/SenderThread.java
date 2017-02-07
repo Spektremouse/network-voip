@@ -1,4 +1,5 @@
 import CMPC3M06.AudioRecorder;
+
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
@@ -8,23 +9,26 @@ import java.util.Vector;
  * Created by thomaspachico on 07/02/2017.
  */
 
-public class SenderThread implements Runnable{
+public class SenderThread implements Runnable {
 
     private static DatagramSocket sending_socket;
     private Vector<byte[]> voiceVector = new Vector<byte[]>();
     private static final int RECORDING_TIME = 35;
     private static final int PACKET_SIZE = 512;
     private AudioRecorder recorder;
+    private String mHostname;
 
+    public SenderThread(String hostname) {
+        mHostname = hostname;
+    }
 
-    public void start(){
+    public void start() {
         Thread thread = new Thread(this);
         thread.start();
     }
 
-    public void run ()
-    {
-        recordAudio();
+    public void run() {
+        System.out.println("Sending...");
 
         //***************************************************
         //Port to send to
@@ -33,7 +37,7 @@ public class SenderThread implements Runnable{
         InetAddress clientIP = null;
         try
         {
-            clientIP = InetAddress.getByName("Samuel-MacBook-Pro");  //CHANGE localhost to IP or NAME of client machine
+            clientIP = InetAddress.getByName(mHostname);
         }
         catch (UnknownHostException e)
         {
@@ -63,45 +67,23 @@ public class SenderThread implements Runnable{
 
         //***************************************************
         //Main loop.
-        try
-        {
-            for (byte[] data : voiceVector)
-            {
-                DatagramPacket packet = new DatagramPacket(data, PACKET_SIZE, clientIP, PORT);
-                sending_socket.send(packet);
-            }
-        }
-        catch (IOException ex)
-        {
-            //TODO Handle IO Exception
-            System.out.println("ERROR: TextSender: Some random IO error occured!");
-            ex.printStackTrace();
-        }
 
-
-        if(!sending_socket.isClosed())
-        {
-            //Close the socket
-            sending_socket.close();
-        }
-    }
-
-    private void recordAudio()
-    {
+        System.out.println("Recording...");
         try
         {
             recorder = new AudioRecorder();
-        }
-        catch (LineUnavailableException ex)
+        } catch (LineUnavailableException ex)
         {
             //TODO handle LineUnavailable exception
         }
 
         try
         {
-            for (int i = 0; i < Math.ceil(RECORDING_TIME / 0.032); i++) {
-                byte[] block = recorder.getBlock();
-                voiceVector.add(block);
+            for (int i = 0; i < Math.ceil(RECORDING_TIME / 0.032); i++)
+            {
+                byte[] data = recorder.getBlock();
+                DatagramPacket packet = new DatagramPacket(data, PACKET_SIZE, clientIP, PORT);
+                sending_socket.send(packet);
             }
 
         }
@@ -112,5 +94,12 @@ public class SenderThread implements Runnable{
 
         //Close audio input
         recorder.close();
+
+        if (!sending_socket.isClosed())
+        {
+            //Close the socket
+            sending_socket.close();
+        }
+        System.out.println("Finished.");
     }
 }

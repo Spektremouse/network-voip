@@ -59,8 +59,8 @@ public class ReceiverThread implements Runnable{
 
         boolean running = true;
 
-        while (running){
-
+        while (running)
+        {
             try
             {
                 //Receive a DatagramPacket (note that the string cant be more than 80 chars)
@@ -69,12 +69,11 @@ public class ReceiverThread implements Runnable{
 
                 receiving_socket.receive(packet);
 
-                voiceVector.add(packet.getData());
+                player.playBlock(packet.getData());
             }
             catch (SocketTimeoutException e)
             {
                 System.out.println("Timeout.");
-                running = false;
             }
             catch (IOException e)
             {
@@ -89,24 +88,6 @@ public class ReceiverThread implements Runnable{
             receiving_socket.close();
         }
         //***************************************************
-
-        playAudio();
-    }
-
-    public void playAudio()
-    {
-        Iterator<byte[]> voiceItr = voiceVector.iterator();
-        try
-        {
-            while (voiceItr.hasNext()) {
-                player.playBlock(voiceItr.next());
-            }
-        }
-        catch (IOException ex)
-        {
-            //TODO Handled IO exception
-        }
-
     }
 }
 
