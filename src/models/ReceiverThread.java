@@ -5,7 +5,9 @@ import uk.ac.uea.cmp.voip.DatagramSocket2;
 import interfaces.IStrategy;
 
 import javax.sound.sampled.LineUnavailableException;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Iterator;
 import java.util.Vector;
@@ -75,6 +77,7 @@ public class ReceiverThread implements Runnable {
                 mReceivingSocket.receive(packet);
 
                 mStrategy.addPacket(packet.getData());
+
             }
             catch (SocketTimeoutException e)
             {
@@ -100,6 +103,22 @@ public class ReceiverThread implements Runnable {
 
             }
             mStrategy.getVoiceVector().clear();
+
+            try
+            {
+                BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+                String line = buffer.readLine();
+
+                if(line.equals("EXIT"))
+                {
+                    running = false;
+                    mPlayer.close();
+                }
+            }
+            catch (IOException ex)
+            {
+                //TODO handle IO exception
+            }
         }
 
         //Close the socket
