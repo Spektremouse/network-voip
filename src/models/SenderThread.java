@@ -2,10 +2,13 @@ package models;
 
 import CMPC3M06.AudioRecorder;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
+import uk.ac.uea.cmp.voip.DatagramSocket3;
+import uk.ac.uea.cmp.voip.DatagramSocket4;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
+import java.security.InvalidParameterException;
 
 /**
  * Created by thomaspachico on 07/02/2017.
@@ -14,14 +17,43 @@ import java.net.*;
 public class SenderThread implements Runnable {
 
     private static final int RECORDING_TIME = 35;
-    private static final int PACKET_SIZE = 512;
     private static final int PORT = 55321;
+    private TransmissionType mCurrentTansmissionType;
+    private PacketIO mPacketiser;
+    private InetAddress mClientIP;
 
-    private static DatagramSocket2 mSendingSocket;
+    private static DatagramSocket mSendingSocket;
     private AudioRecorder mRecorder;
     private String mHostname;
 
-    public SenderThread(String hostname) {
+    public SenderThread(String hostname, DatagramType socketType, TransmissionType type) throws SocketException
+    {
+        if(type != TransmissionType.TEST || type != TransmissionType.VOICE)
+        {
+            throw new InvalidParameterException("Invalid packet type parameter.");
+        }
+        //***************************************************
+        //Open a socket to send from
+        //We dont need to know its port number as we never send anything to it.
+        //We need the try and catch block to make sure no errors occur.
+        switch (socketType)
+        {
+            case DEFAULT:
+                mSendingSocket = new DatagramSocket();
+                break;
+            case SOCKET2:
+                mSendingSocket = new DatagramSocket2();
+                break;
+            case SOCKET3:
+                mSendingSocket = new DatagramSocket3();
+                break;
+            case SOCKET4:
+                mSendingSocket = new DatagramSocket4();
+                break;
+            default:
+                throw new InvalidParameterException("Invalid socket type.");
+        }
+        mPacketiser = new PacketIO();
         mHostname = hostname;
     }
 
@@ -34,41 +66,59 @@ public class SenderThread implements Runnable {
         System.out.println("Sending...");
 
         //IP ADDRESS to send to
-        InetAddress clientIP = null;
         try
         {
-            clientIP = InetAddress.getByName(mHostname);
-            System.out.println(clientIP.toString());
+            mClientIP = InetAddress.getByName(mHostname);
+            System.out.println(mClientIP.toString());
         }
         catch (UnknownHostException e)
         {
-            System.out.println("ERROR: TextSender: Could not find client IP");
+            System.out.println("ERROR: SenderThread: Could not find client IP");
             e.printStackTrace();
             System.exit(0);
         }
-        //***************************************************
-
-        //***************************************************
-        //Open a socket to send from
-        //We dont need to know its port number as we never send anything to it.
-        //We need the try and catch block to make sure no errors occur.
-
-        //DatagramSocket sending_socket;
-        try
-        {
-            mSendingSocket = new DatagramSocket2();
-        }
-        catch (SocketException e)
-        {
-            System.out.println("ERROR: TextSender: Could not open UDP socket to send from.");
-            e.printStackTrace();
-            System.exit(0);
-        }
-        //***************************************************
-
         //***************************************************
         //Main loop.
+        switch (mCurrentTansmissionType)
+        {
+            case TEST:
+                sendTestTransmission();
+                break;
+            case VOICE:
+                sendVoiceTransmission();
+                break;
+            default:
+                throw new InvalidParameterException("Transmission type was not found.");
+        }
+        
+        if (!mSendingSocket.isClosed())
+        {
+            //Close the socket
+            mSendingSocket.close();
+        }
+        System.out.println("Finished.");
+    }
 
+    private void sendTestTransmission()
+    {
+        try
+        {
+            for (int i = 0; i < 2000; i++)
+            {
+                DatagramPacket datagram = new DatagramPacket(mPacketiser.generatePacket(new byte[512]),
+                        mPacketiser.getPacketSize(), mClientIP, PORT);
+
+                mSendingSocket.send(datagram);
+            }
+        }
+        catch (IOException ex)
+        {
+            //TODO handle IO exception
+        }
+    }
+
+    private void sendVoiceTransmission()
+    {
         System.out.println("Recording...");
         try
         {
@@ -82,9 +132,10 @@ public class SenderThread implements Runnable {
         {
             for (int i = 0; i < Math.ceil(RECORDING_TIME / 0.032); i++)
             {
-                byte[] data = mRecorder.getBlock();
-                DatagramPacket packet = new DatagramPacket(data, PACKET_SIZE, clientIP, PORT);
-                mSendingSocket.send(packet);
+                DatagramPacket datagram = new DatagramPacket(mPacketiser.generatePacket(mRecorder.getBlock()),
+                        mPacketiser.getPacketSize(), mClientIP, PORT);
+
+                mSendingSocket.send(datagram);
             }
         }
         catch (IOException ex)
@@ -94,12 +145,5 @@ public class SenderThread implements Runnable {
 
         //Close audio input
         mRecorder.close();
-
-        if (!mSendingSocket.isClosed())
-        {
-            //Close the socket
-            mSendingSocket.close();
-        }
-        System.out.println("Finished.");
     }
 }

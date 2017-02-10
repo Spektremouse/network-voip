@@ -1,17 +1,12 @@
 package models;
 
 import CMPC3M06.AudioPlayer;
-import javafx.application.Application;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import interfaces.IStrategy;
-
 import javax.sound.sampled.LineUnavailableException;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * Created by thomaspachico on 07/02/2017.
@@ -76,6 +71,17 @@ public class ReceiverThread implements Runnable {
                 byte[] data = new byte[512];
                 DatagramPacket packet = new DatagramPacket(data, 0, 512);
 
+                if(mCurrentRecordingTime < Math.ceil(RECORDING_TIME / 0.032))
+                {
+                    mCurrentRecordingTime++;
+                    System.out.println(""+mCurrentRecordingTime);
+                }
+                else
+                {
+                    mPlayer.close();
+                    running = false;
+                }
+
                 mReceivingSocket.receive(packet);
 
                 mStrategy.addPacket(packet.getData());
@@ -98,15 +104,6 @@ public class ReceiverThread implements Runnable {
                 while (voiceItr.hasNext())
                 {
                     mPlayer.playBlock(voiceItr.next());
-                    if(mCurrentRecordingTime < Math.ceil(RECORDING_TIME / 0.032))
-                    {
-                        mCurrentRecordingTime++;
-                    }
-                    else
-                    {
-                        running = false;
-                        mPlayer.close();
-                    }
                 }
             }
             catch (IOException ex)
@@ -120,21 +117,6 @@ public class ReceiverThread implements Runnable {
         if(!mReceivingSocket.isClosed())
         {
             mReceivingSocket.close();
-        }
-
-        try
-        {
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-            String line = buffer.readLine();
-
-            if(line.equals("EXIT"))
-            {
-                System.exit(0);
-            }
-        }
-        catch (IOException ex)
-        {
-            //TODO handle IO exception
         }
     }
 }
