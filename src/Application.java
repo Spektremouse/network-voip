@@ -12,8 +12,8 @@ public class Application {
         FillingStrategy fill = new FillingStrategy();
         RepititionStrategy repeat = new RepititionStrategy();
 
-        ReceiverThread receiver = new ReceiverThread(fill);
-        SenderThread sender = new SenderThread("192.168.0.21");
+        ReceiverThread receiver = new ReceiverThread(splice);
+        SenderThread sender = new SenderThread("169.254.124.240");
 
         receiver.start();
         sender.start();

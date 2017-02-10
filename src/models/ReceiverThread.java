@@ -1,6 +1,7 @@
 package models;
 
 import CMPC3M06.AudioPlayer;
+import javafx.application.Application;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import interfaces.IStrategy;
 
@@ -20,6 +21,8 @@ public class ReceiverThread implements Runnable {
 
     private static final int TIMEOUT = 32;
     private static final int PORT = 55321;
+    private static final int RECORDING_TIME = 35;
+    private int mCurrentRecordingTime =0;
 
     private static DatagramSocket2 mReceivingSocket;
     private AudioPlayer mPlayer;
@@ -29,7 +32,6 @@ public class ReceiverThread implements Runnable {
     {
         mStrategy = strategy;
     }
-
 
     public void start(){
         Thread thread = new Thread(this);
@@ -86,7 +88,7 @@ public class ReceiverThread implements Runnable {
             }
             catch (IOException e)
             {
-                System.out.println("ERROR: TextReceiver: Some random IO error occured!");
+                System.out.println("ERROR: TextReceiver: Some random IO error occurred!");
                 e.printStackTrace();
             }
 
@@ -96,6 +98,15 @@ public class ReceiverThread implements Runnable {
                 while (voiceItr.hasNext())
                 {
                     mPlayer.playBlock(voiceItr.next());
+                    if(mCurrentRecordingTime < Math.ceil(RECORDING_TIME / 0.032))
+                    {
+                        mCurrentRecordingTime++;
+                    }
+                    else
+                    {
+                        running = false;
+                        mPlayer.close();
+                    }
                 }
             }
             catch (IOException ex)
@@ -103,28 +114,27 @@ public class ReceiverThread implements Runnable {
 
             }
             mStrategy.getVoiceVector().clear();
-
-            try
-            {
-                BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-                String line = buffer.readLine();
-
-                if(line.equals("EXIT"))
-                {
-                    running = false;
-                    mPlayer.close();
-                }
-            }
-            catch (IOException ex)
-            {
-                //TODO handle IO exception
-            }
         }
 
         //Close the socket
         if(!mReceivingSocket.isClosed())
         {
             mReceivingSocket.close();
+        }
+
+        try
+        {
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+            String line = buffer.readLine();
+
+            if(line.equals("EXIT"))
+            {
+                System.exit(0);
+            }
+        }
+        catch (IOException ex)
+        {
+            //TODO handle IO exception
         }
     }
 }
