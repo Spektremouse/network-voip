@@ -7,6 +7,7 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Created by thomaspachico on 07/02/2017.
@@ -18,6 +19,9 @@ public class ReceiverThread implements Runnable {
     private static final int PORT = 55321;
     private static final int RECORDING_TIME = 35;
     private int mCurrentRecordingTime =0;
+    private PacketIO mPacketiser;
+
+    private Vector<VoicePacket> mQueue;
 
     private static DatagramSocket2 mReceivingSocket;
     private AudioPlayer mPlayer;
@@ -25,7 +29,9 @@ public class ReceiverThread implements Runnable {
 
     public ReceiverThread(IStrategy strategy)
     {
+        mPacketiser = new PacketIO();
         mStrategy = strategy;
+        mQueue = new Vector<VoicePacket>();
     }
 
     public void start(){
@@ -35,15 +41,6 @@ public class ReceiverThread implements Runnable {
 
     public void run ()
     {
-        try
-        {
-             mPlayer = new AudioPlayer();
-        }
-        catch (LineUnavailableException ex)
-        {
-            //TODO handle LineUnavailable exception
-        }
-
         //***************************************************
         //Open a socket to receive from on port PORT
         try
@@ -64,11 +61,52 @@ public class ReceiverThread implements Runnable {
 
         boolean running = true;
 
+        while(mQueue.size() < 2)
+        {
+            try
+            {
+                byte[] data = new byte[mPacketiser.PACKET_SIZE];
+                DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
+
+                mReceivingSocket.receive(packet);
+
+                VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
+
+                mQueue.add(vp);
+            }
+            catch (Exception ex)
+            {
+                //TODO Handle
+            }
+        }
+
+        for (VoicePacket vp : mQueue)
+        {
+            vp.toString();
+        }
+
+        /*
         while (running)
         {
             try
             {
-                byte[] data = new byte[512];
+                byte[] data = new byte[mPacketiser.PACKET_SIZE];
+                DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
+
+                mReceivingSocket.receive(packet);
+
+                VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
+
+                mQueue.add(vp);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            try
+            {
+                byte[] data = new byte[mPacketiser.PACKET_SIZE];
                 DatagramPacket packet = new DatagramPacket(data, 0, 512);
 
                 if(mCurrentRecordingTime < Math.ceil(RECORDING_TIME / 0.032))
@@ -112,11 +150,26 @@ public class ReceiverThread implements Runnable {
             }
             mStrategy.getVoiceVector().clear();
         }
+        */
 
         //Close the socket
         if(!mReceivingSocket.isClosed())
         {
             mReceivingSocket.close();
+        }
+    }
+
+    public void receiveTestTransmission(){}
+
+    public void receiveVoiceTransmission()
+    {
+        try
+        {
+            mPlayer = new AudioPlayer();
+        }
+        catch (LineUnavailableException ex)
+        {
+            //TODO handle LineUnavailable exception
         }
     }
 }

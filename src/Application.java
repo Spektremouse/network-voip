@@ -20,7 +20,7 @@ public class Application {
         RepititionStrategy repeat = new RepititionStrategy();
 
         ReceiverThread receiver = new ReceiverThread(repeat);
-        SenderThread sender = new SenderThread("169.254.124.240", DatagramType.SOCKET2);
+        SenderThread sender = new SenderThread("169.254.124.240", DatagramType.SOCKET2, TransmissionType.VOICE);
 
         receiver.start();
         sender.start();

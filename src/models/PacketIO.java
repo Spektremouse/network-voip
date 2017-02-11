@@ -11,21 +11,15 @@ import java.util.Arrays;
 public class PacketIO
 {
     private int mChecksum;
-    private final static int HEADER_SIZE = 2;
-    private int mPacketSize;
+    private final static int HEADER_SIZE = 3;
+    public static final int PACKET_SIZE = 515;
 
     public PacketIO()
     {
         mChecksum = 0;
-        mPacketSize = 0;
     }
 
-    public int getPacketSize()
-    {
-        return mPacketSize;
-    }
-
-    public byte [] generatePacket(byte [] payload) throws IOException {
+    public byte [] generatePacket(byte [] payload, TransmissionType type) throws IOException {
         if (mChecksum < 65535) {
             mChecksum++;
         } else {
@@ -41,10 +35,10 @@ public class PacketIO
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         outputStream.write(header);
+        outputStream.write(type.getCode());
         outputStream.write(payload);
 
         byte [] data = outputStream.toByteArray();
-        mPacketSize = data.length;
 
         return  data;
     }
@@ -52,12 +46,15 @@ public class PacketIO
     public VoicePacket unpackPacket(byte [] data)
     {
         byte [] header = new byte[HEADER_SIZE];
+        //checksum
         header[0] = data[0];
         header[1] = data[1];
+        //packet type
+        int type = data[2];
 
         byte [] payload = Arrays.copyOfRange(data, HEADER_SIZE, data.length);
 
-        return new VoicePacket(bytesToInt(header), payload);
+        return new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
     }
 
     //packaging a packet

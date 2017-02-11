@@ -4,15 +4,10 @@ import CMPC3M06.AudioRecorder;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
 import uk.ac.uea.cmp.voip.DatagramSocket4;
-
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.security.InvalidParameterException;
-
-/**
- * Created by thomaspachico on 07/02/2017.
- */
 
 public class SenderThread implements Runnable {
 
@@ -28,10 +23,7 @@ public class SenderThread implements Runnable {
 
     public SenderThread(String hostname, DatagramType socketType, TransmissionType type) throws SocketException
     {
-        if(type != TransmissionType.TEST || type != TransmissionType.VOICE)
-        {
-            throw new InvalidParameterException("Invalid packet type parameter.");
-        }
+        mCurrentTansmissionType = type;
         //***************************************************
         //Open a socket to send from
         //We dont need to know its port number as we never send anything to it.
@@ -90,7 +82,7 @@ public class SenderThread implements Runnable {
             default:
                 throw new InvalidParameterException("Transmission type was not found.");
         }
-        
+
         if (!mSendingSocket.isClosed())
         {
             //Close the socket
@@ -105,8 +97,9 @@ public class SenderThread implements Runnable {
         {
             for (int i = 0; i < 2000; i++)
             {
-                DatagramPacket datagram = new DatagramPacket(mPacketiser.generatePacket(new byte[512]),
-                        mPacketiser.getPacketSize(), mClientIP, PORT);
+                byte [] data = mPacketiser.generatePacket(new byte[512],TransmissionType.TEST);
+
+                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.getPacketSize(), mClientIP, PORT);
 
                 mSendingSocket.send(datagram);
             }
@@ -132,8 +125,9 @@ public class SenderThread implements Runnable {
         {
             for (int i = 0; i < Math.ceil(RECORDING_TIME / 0.032); i++)
             {
-                DatagramPacket datagram = new DatagramPacket(mPacketiser.generatePacket(mRecorder.getBlock()),
-                        mPacketiser.getPacketSize(), mClientIP, PORT);
+                byte [] data = mPacketiser.generatePacket(mRecorder.getBlock(),TransmissionType.VOICE);
+
+                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.getPacketSize(), mClientIP, PORT);
 
                 mSendingSocket.send(datagram);
             }

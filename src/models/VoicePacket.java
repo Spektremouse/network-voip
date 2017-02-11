@@ -1,7 +1,5 @@
 package models;
 
-import java.security.InvalidParameterException;
-
 public class VoicePacket
 {
     private byte[] mPayload;
@@ -13,10 +11,6 @@ public class VoicePacket
 
     public VoicePacket(int checksum, byte [] payload, TransmissionType type)
     {
-        if(type != TransmissionType.TEST || type != TransmissionType.VOICE)
-        {
-            throw new InvalidParameterException("Invalid packet type parameter.");
-        }
         mCurrentType = type;
         mChecksum = checksum;
         mPayload = payload;
@@ -31,4 +25,10 @@ public class VoicePacket
     public int getChecksum() { return mChecksum; }
 
     public void setChecksum(int checksum) { this.mChecksum = checksum; }
+
+    @Override
+    public String toString()
+    {
+        return ""+mChecksum+"/"+mCurrentType+"/"+mPayload.length;
+    }
 }
