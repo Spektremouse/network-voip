@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class PacketIO
 {
     private int mChecksum;
-    private final static int HEADER_SIZE = 4;
+    private final static int HEADER_SIZE = 5;
     public static final int PACKET_SIZE = 517;
 
     public PacketIO()

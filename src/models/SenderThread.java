@@ -110,10 +110,12 @@ public class SenderThread implements Runnable {
         {
             //TODO handle IO exception
         }
+
         catch (InterruptedException ex)
         {
             ex.printStackTrace();
         }
+
     }
 
     private void sendVoiceTransmission()

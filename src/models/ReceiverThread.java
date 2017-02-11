@@ -61,11 +61,10 @@ public class ReceiverThread implements Runnable {
 
         boolean running = true;
 
-        while(mQueue.size() < 3)
+        while(mQueue.size() < 4)
         {
             try
             {
-                //System.out.println("Receiving...");
                 byte[] data = new byte[mPacketiser.PACKET_SIZE];
                 DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
 
@@ -74,8 +73,7 @@ public class ReceiverThread implements Runnable {
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
                 mQueue.add(vp);
-                System.out.println(mQueue.size());
-                System.out.println("Packet added to queue!");
+                System.out.println("Unknown packet added to queue!");
             }
             catch (SocketTimeoutException ex)
             {
@@ -86,6 +84,17 @@ public class ReceiverThread implements Runnable {
                 ex.printStackTrace();
                 System.exit(1);
             }
+        }
+
+        switch (mQueue.elementAt(0).getCurrentType())
+        {
+            case VOICE:
+                break;
+            case TEST:
+                receiveTestTransmission();
+                break;
+            default:
+                break;
         }
 
         for (VoicePacket vp : mQueue)
@@ -167,7 +176,51 @@ public class ReceiverThread implements Runnable {
         }
     }
 
-    public void receiveTestTransmission(){}
+    public void receiveTestTransmission()
+    {
+        boolean receiving = true;
+
+        try
+        {
+            mReceivingSocket.setSoTimeout(3000);
+        }
+        catch (SocketException ex)
+        {
+            System.out.println("RECEIVING TEST ERROR");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+
+        while(receiving)
+        {
+            try
+            {
+                byte[] data = new byte[mPacketiser.PACKET_SIZE];
+                DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
+
+                mReceivingSocket.receive(packet);
+
+                VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
+
+                if(vp.getCurrentType() != null)
+                {
+                    mQueue.add(vp);
+                    System.out.println("Test packet added to queue!");
+                }
+            }
+            catch (SocketTimeoutException ex)
+            {
+                receiving = false;
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
+        System.out.println("Packets Received: "+mQueue.size()+"/2000");
+        System.out.println("Total packets lost: "+(2000-mQueue.size()));
+    }
 
     public void receiveVoiceTransmission()
     {
