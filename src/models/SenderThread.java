@@ -99,7 +99,9 @@ public class SenderThread implements Runnable {
             {
                 byte [] data = mPacketiser.generatePacket(new byte[512],TransmissionType.TEST);
 
-                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.getPacketSize(), mClientIP, PORT);
+                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.PACKET_SIZE, mClientIP, PORT);
+
+                Thread.sleep(32);
 
                 mSendingSocket.send(datagram);
             }
@@ -107,6 +109,10 @@ public class SenderThread implements Runnable {
         catch (IOException ex)
         {
             //TODO handle IO exception
+        }
+        catch (InterruptedException ex)
+        {
+            ex.printStackTrace();
         }
     }
 
@@ -127,14 +133,14 @@ public class SenderThread implements Runnable {
             {
                 byte [] data = mPacketiser.generatePacket(mRecorder.getBlock(),TransmissionType.VOICE);
 
-                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.getPacketSize(), mClientIP, PORT);
+                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.PACKET_SIZE, mClientIP, PORT);
 
                 mSendingSocket.send(datagram);
             }
         }
         catch (IOException ex)
         {
-            //TODO handle IO exception
+            ex.printStackTrace();
         }
 
         //Close audio input

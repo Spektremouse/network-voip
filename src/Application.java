@@ -13,14 +13,14 @@ public class Application {
 
     public static void main(String[] args) throws Exception {
 
-
+    //192.168.0.21
 
         SplicingStrategy splice = new SplicingStrategy();
         FillingStrategy fill = new FillingStrategy();
         RepititionStrategy repeat = new RepititionStrategy();
 
         ReceiverThread receiver = new ReceiverThread(repeat);
-        SenderThread sender = new SenderThread("169.254.124.240", DatagramType.SOCKET2, TransmissionType.VOICE);
+        SenderThread sender = new SenderThread("localhost", DatagramType.DEFAULT, TransmissionType.TEST);
 
         receiver.start();
         sender.start();

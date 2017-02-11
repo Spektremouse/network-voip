@@ -11,8 +11,8 @@ import java.util.Arrays;
 public class PacketIO
 {
     private int mChecksum;
-    private final static int HEADER_SIZE = 3;
-    public static final int PACKET_SIZE = 515;
+    private final static int HEADER_SIZE = 4;
+    public static final int PACKET_SIZE = 517;
 
     public PacketIO()
     {
@@ -49,10 +49,14 @@ public class PacketIO
         //checksum
         header[0] = data[0];
         header[1] = data[1];
+        header[2] = data[2];
+        header[3] = data[3];
         //packet type
-        int type = data[2];
+        int type = data[4];
 
         byte [] payload = Arrays.copyOfRange(data, HEADER_SIZE, data.length);
+
+        System.out.println(bytesToInt(header));
 
         return new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
     }
@@ -60,9 +64,9 @@ public class PacketIO
     //packaging a packet
     private byte [] intToBytes(int i)
     {
-        ByteBuffer bb = ByteBuffer.allocate(2);
+        ByteBuffer bb = ByteBuffer.allocate(4);
         bb.putInt(i);
-        return  bb.array();
+        return bb.array();
     }
 
     //unpacking a packet

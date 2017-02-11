@@ -61,10 +61,11 @@ public class ReceiverThread implements Runnable {
 
         boolean running = true;
 
-        while(mQueue.size() < 2)
+        while(mQueue.size() < 3)
         {
             try
             {
+                //System.out.println("Receiving...");
                 byte[] data = new byte[mPacketiser.PACKET_SIZE];
                 DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
 
@@ -73,16 +74,23 @@ public class ReceiverThread implements Runnable {
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
                 mQueue.add(vp);
+                System.out.println(mQueue.size());
+                System.out.println("Packet added to queue!");
             }
-            catch (Exception ex)
+            catch (SocketTimeoutException ex)
             {
-                //TODO Handle
+                //ex.printStackTrace();
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+                System.exit(1);
             }
         }
 
         for (VoicePacket vp : mQueue)
         {
-            vp.toString();
+            System.out.println(vp.toString());
         }
 
         /*
