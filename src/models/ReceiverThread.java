@@ -6,7 +6,6 @@ import interfaces.IStrategy;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -17,8 +16,6 @@ public class ReceiverThread implements Runnable {
 
     private static final int TIMEOUT = 32;
     private static final int PORT = 55321;
-    private static final int RECORDING_TIME = 35;
-    private int mCurrentRecordingTime =0;
     private PacketIO mPacketiser;
 
     private Vector<VoicePacket> mQueue;
@@ -54,12 +51,6 @@ public class ReceiverThread implements Runnable {
             e.printStackTrace();
             System.exit(0);
         }
-        //***************************************************
-
-        //***************************************************
-        //Main loop.
-
-        boolean running = true;
 
         while(mQueue.size() < 4)
         {
@@ -89,6 +80,7 @@ public class ReceiverThread implements Runnable {
         switch (mQueue.elementAt(0).getCurrentType())
         {
             case VOICE:
+                receiveVoiceTransmission();
                 break;
             case TEST:
                 receiveTestTransmission();
@@ -101,73 +93,6 @@ public class ReceiverThread implements Runnable {
         {
             System.out.println(vp.toString());
         }
-
-        /*
-        while (running)
-        {
-            try
-            {
-                byte[] data = new byte[mPacketiser.PACKET_SIZE];
-                DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
-
-                mReceivingSocket.receive(packet);
-
-                VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
-
-                mQueue.add(vp);
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            try
-            {
-                byte[] data = new byte[mPacketiser.PACKET_SIZE];
-                DatagramPacket packet = new DatagramPacket(data, 0, 512);
-
-                if(mCurrentRecordingTime < Math.ceil(RECORDING_TIME / 0.032))
-                {
-                    mCurrentRecordingTime++;
-                    System.out.println(""+mCurrentRecordingTime);
-                }
-                else
-                {
-                    mPlayer.close();
-                    running = false;
-                }
-
-                mReceivingSocket.receive(packet);
-
-                mStrategy.addPacket(packet.getData());
-
-            }
-            catch (SocketTimeoutException e)
-            {
-                System.out.println("Timeout.");
-                mStrategy.handlePacketLoss();
-            }
-            catch (IOException e)
-            {
-                System.out.println("ERROR: TextReceiver: Some random IO error occurred!");
-                e.printStackTrace();
-            }
-
-            Iterator<byte[]> voiceItr = mStrategy.getVoiceVector().iterator();
-            try
-            {
-                while (voiceItr.hasNext())
-                {
-                    mPlayer.playBlock(voiceItr.next());
-                }
-            }
-            catch (IOException ex)
-            {
-
-            }
-            mStrategy.getVoiceVector().clear();
-        }
-        */
 
         //Close the socket
         if(!mReceivingSocket.isClosed())
@@ -230,7 +155,50 @@ public class ReceiverThread implements Runnable {
         }
         catch (LineUnavailableException ex)
         {
+            ex.printStackTrace();
+            System.exit(1);
             //TODO handle LineUnavailable exception
+        }
+
+        boolean running = true;
+        int currentPlace = 0;
+
+        while (running)
+        {
+            try
+            {
+                mPlayer.playBlock(mQueue.elementAt(currentPlace).getPayload());
+                currentPlace++;
+
+                byte[] data = new byte[mPacketiser.PACKET_SIZE];
+                DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
+
+                mReceivingSocket.receive(packet);
+
+                VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
+
+                if(vp.getCurrentType() != null)
+                {
+                    mQueue.add(vp);
+                    System.out.println("Voice packet added to queue!");
+                }
+
+                if(currentPlace == mQueue.size())
+                {
+                    running = false;
+                }
+
+            }
+            catch (SocketTimeoutException e)
+            {
+                currentPlace--;
+                System.out.println("Timeout.");
+                mStrategy.handlePacketLoss();
+            }
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
         }
     }
 }
