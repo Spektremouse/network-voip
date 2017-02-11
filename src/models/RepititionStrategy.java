@@ -20,12 +20,12 @@ public class RepititionStrategy extends GenericStrategy implements IStrategy {
     }
 
     @Override
-    public void handlePacketLoss()
+    public boolean handlePacketLoss()
     {
         if(mVoiceVector.size() != 0 )
         {
             mVoiceVector.add(mVoiceVector.lastElement());
-
         }
+        return true;
     }
 }

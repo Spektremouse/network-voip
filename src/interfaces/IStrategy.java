@@ -12,5 +12,5 @@ public interface IStrategy
     public Vector<VoicePacket> getVoiceVector();
     public void setVoiceVector(Vector<VoicePacket> buffer);
     public void addPacket(VoicePacket packet);
-    public void handlePacketLoss();
+    public boolean handlePacketLoss();
 }

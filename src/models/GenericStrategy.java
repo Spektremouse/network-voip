@@ -32,7 +32,7 @@ public class GenericStrategy implements IStrategy
     }
 
     @Override
-    public void handlePacketLoss() {
-
+    public boolean handlePacketLoss() {
+        return true;
     }
 }

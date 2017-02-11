@@ -193,9 +193,8 @@ public class ReceiverThread implements Runnable {
             }
             catch (SocketTimeoutException e)
             {
-                isPlayable = false;
+                isPlayable = mStrategy.handlePacketLoss();
                 System.out.println("Timeout.");
-                mStrategy.handlePacketLoss();
             }
             catch (IOException ex)
             {
