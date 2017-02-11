@@ -7,20 +7,19 @@ import java.util.Vector;
 /**
  * Created by thomaspachico on 07/02/2017.
  */
-public class RepititionStrategy implements IStrategy {
+public class RepititionStrategy extends GenericStrategy implements IStrategy {
 
-    private Vector<byte[]> mVoiceVector = new Vector<byte[]>();
 
     @Override
-    public Vector<byte[]> getVoiceVector()
+    public Vector<VoicePacket> getVoiceVector()
     {
         return mVoiceVector;
     }
 
     @Override
-    public void addPacket(byte[] data)
+    public void addPacket(VoicePacket packet)
     {
-        mVoiceVector.add(data);
+        mVoiceVector.add(packet);
     }
 
     @Override

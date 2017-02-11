@@ -1,5 +1,7 @@
 package interfaces;
 
+import models.VoicePacket;
+
 import java.util.Vector;
 
 /**
@@ -7,7 +9,7 @@ import java.util.Vector;
  */
 public interface IStrategy
 {
-    public Vector<byte[]> getVoiceVector();
-    public void addPacket(byte[] data);
+    public Vector<VoicePacket> getVoiceVector();
+    public void addPacket(VoicePacket packet);
     public void handlePacketLoss();
 }

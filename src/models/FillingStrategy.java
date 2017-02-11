@@ -1,31 +1,30 @@
 package models;
+
 import interfaces.IStrategy;
-
 import java.util.Vector;
-
 
 /**
  * Created by thomaspachico on 07/02/2017.
  */
-public class FillingStrategy implements IStrategy {
+public class FillingStrategy extends GenericStrategy implements IStrategy {
 
-    private Vector<byte[]> mVoiceVector = new Vector<byte[]>();
+    private Vector<VoicePacket> mVoiceVector = new Vector<VoicePacket>();
 
     @Override
-    public Vector<byte[]> getVoiceVector()
+    public Vector<VoicePacket> getVoiceVector()
     {
         return mVoiceVector;
     }
 
     @Override
-    public void addPacket(byte[] data)
+    public void addPacket(VoicePacket packet)
     {
-        mVoiceVector.add(data);
+        mVoiceVector.add(packet);
     }
 
     @Override
     public void handlePacketLoss()
     {
-        mVoiceVector.add(new byte[512]);
+        //mVoiceVector.add(new VoicePacket());
     }
 }

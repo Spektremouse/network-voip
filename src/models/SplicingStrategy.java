@@ -6,19 +6,17 @@ import java.util.Vector;
 /**
  * Created by thomaspachico on 07/02/2017.
  */
-public class SplicingStrategy implements IStrategy {
-
-    private Vector<byte[]> mVoiceVector = new Vector<byte[]>();
+public class SplicingStrategy extends GenericStrategy implements IStrategy {
 
     @Override
-    public Vector<byte[]> getVoiceVector() {
+    public Vector<VoicePacket> getVoiceVector() {
         return mVoiceVector;
     }
 
     @Override
-    public void addPacket(byte[] data)
+    public void addPacket(VoicePacket packet)
     {
-        mVoiceVector.add(data);
+        mVoiceVector.add(packet);
     }
 
     @Override

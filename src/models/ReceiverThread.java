@@ -52,7 +52,7 @@ public class ReceiverThread implements Runnable {
             System.exit(0);
         }
 
-        while(mQueue.size() < 4)
+        while(mQueue.size() < 1)
         {
             try
             {
@@ -168,13 +168,14 @@ public class ReceiverThread implements Runnable {
             try
             {
                 mPlayer.playBlock(mQueue.elementAt(currentPlace).getPayload());
-                currentPlace++;
 
                 byte[] data = new byte[mPacketiser.PACKET_SIZE];
                 DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
 
                 mReceivingSocket.receive(packet);
 
+                currentPlace++;
+                
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
                 if(vp.getCurrentType() != null)
@@ -183,15 +184,13 @@ public class ReceiverThread implements Runnable {
                     System.out.println("Voice packet added to queue!");
                 }
 
-                if(currentPlace == mQueue.size())
+                if(currentPlace == 938)
                 {
                     running = false;
                 }
-
             }
             catch (SocketTimeoutException e)
             {
-                currentPlace--;
                 System.out.println("Timeout.");
                 mStrategy.handlePacketLoss();
             }
@@ -199,7 +198,10 @@ public class ReceiverThread implements Runnable {
             {
                 ex.printStackTrace();
             }
+
         }
+
+        mPlayer.close();
     }
 }
 
