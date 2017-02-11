@@ -8,9 +8,10 @@ import java.util.Vector;
  */
 public class SplicingStrategy extends GenericStrategy implements IStrategy {
 
-    @Override
-    public Vector<VoicePacket> getVoiceVector() {
-        return mVoiceVector;
+
+    public SplicingStrategy()
+    {
+        super();
     }
 
     @Override

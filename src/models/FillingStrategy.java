@@ -8,12 +8,9 @@ import java.util.Vector;
  */
 public class FillingStrategy extends GenericStrategy implements IStrategy {
 
-    private Vector<VoicePacket> mVoiceVector = new Vector<VoicePacket>();
-
-    @Override
-    public Vector<VoicePacket> getVoiceVector()
+    public FillingStrategy()
     {
-        return mVoiceVector;
+        super();
     }
 
     @Override

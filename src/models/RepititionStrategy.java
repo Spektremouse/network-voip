@@ -1,8 +1,6 @@
 package models;
-;
-import interfaces.IStrategy;
 
-import java.util.Vector;
+import interfaces.IStrategy;
 
 /**
  * Created by thomaspachico on 07/02/2017.
@@ -10,10 +8,9 @@ import java.util.Vector;
 public class RepititionStrategy extends GenericStrategy implements IStrategy {
 
 
-    @Override
-    public Vector<VoicePacket> getVoiceVector()
+    public RepititionStrategy()
     {
-        return mVoiceVector;
+        super();
     }
 
     @Override

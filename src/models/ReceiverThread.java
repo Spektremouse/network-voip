@@ -18,8 +18,6 @@ public class ReceiverThread implements Runnable {
     private static final int PORT = 55321;
     private PacketIO mPacketiser;
 
-    private Vector<VoicePacket> mQueue;
-
     private static DatagramSocket2 mReceivingSocket;
     private AudioPlayer mPlayer;
     private IStrategy mStrategy;
@@ -28,7 +26,6 @@ public class ReceiverThread implements Runnable {
     {
         mPacketiser = new PacketIO();
         mStrategy = strategy;
-        mQueue = new Vector<VoicePacket>();
     }
 
     public void start(){
@@ -52,7 +49,7 @@ public class ReceiverThread implements Runnable {
             System.exit(0);
         }
 
-        while(mQueue.size() < 1)
+        while(mStrategy.getVoiceVector().size() < 4)
         {
             try
             {
@@ -63,7 +60,7 @@ public class ReceiverThread implements Runnable {
 
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
-                mQueue.add(vp);
+                mStrategy.getVoiceVector().add(vp);
                 System.out.println("Unknown packet added to queue!");
             }
             catch (SocketTimeoutException ex)
@@ -77,7 +74,7 @@ public class ReceiverThread implements Runnable {
             }
         }
 
-        switch (mQueue.elementAt(0).getCurrentType())
+        switch (mStrategy.getVoiceVector().elementAt(0).getCurrentType())
         {
             case VOICE:
                 receiveVoiceTransmission();
@@ -89,7 +86,7 @@ public class ReceiverThread implements Runnable {
                 break;
         }
 
-        for (VoicePacket vp : mQueue)
+        for (VoicePacket vp : mStrategy.getVoiceVector())
         {
             System.out.println(vp.toString());
         }
@@ -129,7 +126,7 @@ public class ReceiverThread implements Runnable {
 
                 if(vp.getCurrentType() != null)
                 {
-                    mQueue.add(vp);
+                    mStrategy.getVoiceVector().add(vp);
                     System.out.println("Test packet added to queue!");
                 }
             }
@@ -143,8 +140,8 @@ public class ReceiverThread implements Runnable {
             }
         }
 
-        System.out.println("Packets Received: "+mQueue.size()+"/2000");
-        System.out.println("Total packets lost: "+(2000-mQueue.size()));
+        System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/2000");
+        System.out.println("Total packets lost: "+(2000-mStrategy.getVoiceVector().size()));
     }
 
     public void receiveVoiceTransmission()
@@ -162,25 +159,30 @@ public class ReceiverThread implements Runnable {
 
         boolean running = true;
         int currentPlace = 0;
+        boolean isPlayable = true;
 
         while (running)
         {
             try
             {
-                mPlayer.playBlock(mQueue.elementAt(currentPlace).getPayload());
+                if(isPlayable)
+                {
+                    mPlayer.playBlock(mStrategy.getVoiceVector().elementAt(currentPlace).getPayload());
+                    currentPlace++;
+                }
 
                 byte[] data = new byte[mPacketiser.PACKET_SIZE];
                 DatagramPacket packet = new DatagramPacket(data, 0, mPacketiser.PACKET_SIZE);
 
                 mReceivingSocket.receive(packet);
 
-                currentPlace++;
-                
+                isPlayable = true;
+
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
                 if(vp.getCurrentType() != null)
                 {
-                    mQueue.add(vp);
+                    mStrategy.getVoiceVector().add(vp);
                     System.out.println("Voice packet added to queue!");
                 }
 
@@ -191,6 +193,7 @@ public class ReceiverThread implements Runnable {
             }
             catch (SocketTimeoutException e)
             {
+                isPlayable = false;
                 System.out.println("Timeout.");
                 mStrategy.handlePacketLoss();
             }
@@ -198,9 +201,7 @@ public class ReceiverThread implements Runnable {
             {
                 ex.printStackTrace();
             }
-
         }
-
         mPlayer.close();
     }
 }
