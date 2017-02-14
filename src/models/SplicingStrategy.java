@@ -23,8 +23,7 @@ public class SplicingStrategy extends GenericStrategy implements IStrategy {
     @Override
     public boolean handlePacketLoss()
     {
-
-        return false;
+        return true;
     }
 
 }

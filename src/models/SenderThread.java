@@ -17,18 +17,15 @@ public class SenderThread implements Runnable {
     private TransmissionType mCurrentTansmissionType;
     private PacketIO mPacketiser;
     private InetAddress mClientIP;
+    private boolean mIsInterleave = false;
 
     private static DatagramSocket mSendingSocket;
     private AudioRecorder mRecorder;
     private String mHostname;
 
-    public SenderThread(String hostname, DatagramType socketType, TransmissionType type) throws SocketException
+    public SenderThread(String hostname, DatagramType socketType, TransmissionType type, boolean isInterleave)
+            throws SocketException
     {
-        mCurrentTansmissionType = type;
-        //***************************************************
-        //Open a socket to send from
-        //We dont need to know its port number as we never send anything to it.
-        //We need the try and catch block to make sure no errors occur.
         switch (socketType)
         {
             case DEFAULT:
@@ -46,8 +43,11 @@ public class SenderThread implements Runnable {
             default:
                 throw new InvalidParameterException("Invalid socket type.");
         }
+
         mPacketiser = new PacketIO();
         mHostname = hostname;
+        mCurrentTansmissionType = type;
+        mIsInterleave = isInterleave;
     }
 
     public void start() {
@@ -58,7 +58,6 @@ public class SenderThread implements Runnable {
     public void run() {
         System.out.println("Sending...");
 
-        //IP ADDRESS to send to
         try
         {
             mClientIP = InetAddress.getByName(mHostname);
@@ -70,8 +69,7 @@ public class SenderThread implements Runnable {
             e.printStackTrace();
             System.exit(0);
         }
-        //***************************************************
-        //Main loop.
+
         switch (mCurrentTansmissionType)
         {
             case TEST:
@@ -86,7 +84,6 @@ public class SenderThread implements Runnable {
 
         if (!mSendingSocket.isClosed())
         {
-            //Close the socket
             mSendingSocket.close();
         }
         System.out.println("Finished.");
@@ -122,7 +119,6 @@ public class SenderThread implements Runnable {
 
     private void sendVoiceTransmission()
     {
-        //list for sending buffer
         Vector<VoicePacket> buffer = new Vector<>();
 
         System.out.println("Recording...");
@@ -144,14 +140,15 @@ public class SenderThread implements Runnable {
 
                 if(buffer.size() >= 4)
                 {
-                    //interleave
-                    //Interleaver interleaver = new Interleaver();
-                    //interleaver.setBlock(buffer);
-                    //buffer = interleaver.rotateLeft();
-                    //then send
+                    if(mIsInterleave)
+                    {
+                        Interleaver interleaver = new Interleaver();
+                        interleaver.setBlock(buffer);
+                        buffer = interleaver.rotateLeft();
+                    }
+
                     for (VoicePacket voice : buffer)
                     {
-                        //System.out.println(voice.getChecksum());
                         DatagramPacket datagram = new DatagramPacket(voice.toByteArray(), mPacketiser.PACKET_SIZE,
                                 mClientIP, PORT);
                         mSendingSocket.send(datagram);
@@ -166,7 +163,6 @@ public class SenderThread implements Runnable {
             ex.printStackTrace();
         }
 
-        //Close audio input
         mRecorder.close();
     }
 }
