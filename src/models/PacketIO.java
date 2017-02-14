@@ -19,7 +19,8 @@ public class PacketIO
         mChecksum = 0;
     }
 
-    public byte [] generatePacket(byte [] payload, TransmissionType type) throws IOException {
+    public VoicePacket generatePacket(byte [] payload, TransmissionType type) throws IOException
+    {
         if (mChecksum < 65535) {
             mChecksum++;
         } else {
@@ -31,16 +32,7 @@ public class PacketIO
             throw new IllegalArgumentException("Invalid payload size");
         }
 
-        byte [] header = intToBytes(mChecksum);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(header);
-        outputStream.write(type.getCode());
-        outputStream.write(payload);
-
-        byte [] data = outputStream.toByteArray();
-
-        return  data;
+        return new VoicePacket(mChecksum, payload, type);
     }
 
     public VoicePacket unpackPacket(byte [] data)
@@ -56,17 +48,7 @@ public class PacketIO
 
         byte [] payload = Arrays.copyOfRange(data, HEADER_SIZE, data.length);
 
-        System.out.println(bytesToInt(header));
-
         return new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
-    }
-
-    //packaging a packet
-    private byte [] intToBytes(int i)
-    {
-        ByteBuffer bb = ByteBuffer.allocate(4);
-        bb.putInt(i);
-        return bb.array();
     }
 
     //unpacking a packet

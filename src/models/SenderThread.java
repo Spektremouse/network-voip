@@ -8,6 +8,7 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.security.InvalidParameterException;
+import java.util.Vector;
 
 public class SenderThread implements Runnable {
 
@@ -97,9 +98,10 @@ public class SenderThread implements Runnable {
         {
             for (int i = 0; i < 2000; i++)
             {
-                byte [] data = mPacketiser.generatePacket(new byte[512],TransmissionType.TEST);
+                VoicePacket vp = mPacketiser.generatePacket(new byte[512],TransmissionType.TEST);
 
-                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.PACKET_SIZE, mClientIP, PORT);
+                DatagramPacket datagram = new DatagramPacket(vp.toByteArray(), mPacketiser.PACKET_SIZE,
+                        mClientIP, PORT);
 
                 Thread.sleep(32);
 
@@ -120,6 +122,9 @@ public class SenderThread implements Runnable {
 
     private void sendVoiceTransmission()
     {
+        //list for sending buffer
+        Vector<VoicePacket> buffer = new Vector<>();
+
         System.out.println("Recording...");
         try
         {
@@ -133,11 +138,27 @@ public class SenderThread implements Runnable {
         {
             for (int i = 0; i < Math.ceil(RECORDING_TIME / 0.032); i++)
             {
-                byte [] data = mPacketiser.generatePacket(mRecorder.getBlock(),TransmissionType.VOICE);
+                VoicePacket vp = mPacketiser.generatePacket(mRecorder.getBlock(),TransmissionType.VOICE);
 
-                DatagramPacket datagram = new DatagramPacket(data, mPacketiser.PACKET_SIZE, mClientIP, PORT);
+                buffer.add(vp);
 
-                mSendingSocket.send(datagram);
+                if(buffer.size() >= 4)
+                {
+                    //interleave
+                    //Interleaver interleaver = new Interleaver();
+                    //interleaver.setBlock(buffer);
+                    //buffer = interleaver.rotateLeft();
+                    //then send
+                    for (VoicePacket voice : buffer)
+                    {
+                        //System.out.println(voice.getChecksum());
+                        DatagramPacket datagram = new DatagramPacket(voice.toByteArray(), mPacketiser.PACKET_SIZE,
+                                mClientIP, PORT);
+                        mSendingSocket.send(datagram);
+                    }
+                    buffer.clear();
+
+                }
             }
         }
         catch (IOException ex)

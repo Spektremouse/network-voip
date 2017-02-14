@@ -21,8 +21,8 @@ public class Application {
         RepititionStrategy repeat = new RepititionStrategy();
         GenericStrategy generic = new GenericStrategy();
 
-        ReceiverThread receiver = new ReceiverThread(generic);
-        SenderThread sender = new SenderThread("192.168.0.21", DatagramType.SOCKET2, TransmissionType.VOICE);
+        ReceiverThread receiver = new ReceiverThread(repeat);
+        SenderThread sender = new SenderThread("localhost", DatagramType.SOCKET3, TransmissionType.TEST);
 
         receiver.start();
         sender.start();

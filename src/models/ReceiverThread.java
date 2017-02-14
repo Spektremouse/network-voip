@@ -6,6 +6,7 @@ import interfaces.IStrategy;
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
+import java.util.Collections;
 import java.util.Vector;
 
 /**
@@ -49,6 +50,7 @@ public class ReceiverThread implements Runnable {
             System.exit(0);
         }
 
+        //Buffer
         while(mStrategy.getVoiceVector().size() < 4)
         {
             try
@@ -165,6 +167,14 @@ public class ReceiverThread implements Runnable {
         {
             try
             {
+                Collections.sort(mStrategy.getVoiceVector(),VoicePacket.COMPARE_BY_CHECKSUM);
+
+                for (VoicePacket voip: mStrategy.getVoiceVector()
+                        ) {
+                    System.out.println(voip.getChecksum());
+
+                }
+
                 if(isPlayable)
                 {
                     mPlayer.playBlock(mStrategy.getVoiceVector().elementAt(currentPlace).getPayload());
