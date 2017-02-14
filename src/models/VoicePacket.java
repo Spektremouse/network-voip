@@ -7,34 +7,77 @@ import java.util.Comparator;
 
 public class VoicePacket implements Comparable<VoicePacket>
 {
-    private byte[] mPayload;
     private TransmissionType mCurrentType;
-    private int mChecksum;
+    private byte [] mPayload;
+    private int mSequenceId;
 
-    public static final int TEST = 0;
-    public static final int VOICE = 1;
-
-    public VoicePacket(int checksum, byte [] payload, TransmissionType type)
+    /**
+     *
+     * @param sequenceId
+     * @param payload
+     * @param type
+     */
+    public VoicePacket(int sequenceId, byte [] payload, TransmissionType type)
     {
         mCurrentType = type;
-        mChecksum = checksum;
+        mSequenceId = sequenceId;
         mPayload = payload;
     }
 
-    public TransmissionType getCurrentType() { return mCurrentType; }
+    /**
+     *
+     * @return
+     */
+    public TransmissionType getCurrentType()
+    {
+        return mCurrentType;
+    }
 
-    public byte[] getPayload() { return mPayload; }
+    /**
+     *
+     * @return
+     */
+    public byte[] getPayload()
+    {
+        return mPayload;
+    }
 
-    public void setPayload(byte[] payload) { this.mPayload = payload; }
+    /**
+     *
+     * @param payload
+     */
+    public void setPayload(byte[] payload)
+    {
+        this.mPayload = payload;
+    }
 
-    public int getChecksum() { return mChecksum; }
+    /**
+     *
+     * @return
+     */
+    public int getSequenceId()
+    {
+        return mSequenceId;
+    }
 
-    public void setChecksum(int checksum) { this.mChecksum = checksum; }
+    /**
+     *
+     * @param checksum
+     */
+    public void setSequenceId(int checksum)
+    {
+        this.mSequenceId = checksum;
+    }
 
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
     public byte [] toByteArray() throws IOException
     {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(intToBytes(mChecksum));
+        outputStream.write(intToBytes(mSequenceId));
         outputStream.write(mCurrentType.getCode());
         outputStream.write(mPayload);
 
@@ -43,6 +86,7 @@ public class VoicePacket implements Comparable<VoicePacket>
         return  data;
     }
 
+    //
     private byte [] intToBytes(int i)
     {
         ByteBuffer bb = ByteBuffer.allocate(4);
@@ -50,27 +94,32 @@ public class VoicePacket implements Comparable<VoicePacket>
         return bb.array();
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String toString()
     {
-        return ""+mChecksum+"/"+mCurrentType+"/"+mPayload.length;
+        return ""+ mSequenceId +"/"+mCurrentType+"/"+mPayload.length;
     }
 
+    /**
+     *
+     * @param vp
+     * @return
+     */
     @Override
     public int compareTo(VoicePacket vp)
     {
-        if (this.getChecksum() > vp.getChecksum())
+        if (this.getSequenceId() > vp.getSequenceId())
             return 0;
         else
             return 1;
     }
 
-    public static Comparator<VoicePacket> COMPARE_BY_CHECKSUM = new Comparator<VoicePacket>()
-    {
-        @Override
-        public int compare(VoicePacket one, VoicePacket other)
-        {
-            return one.getChecksum() - other.getChecksum();
-        }
-    };
+    /**
+     *
+     */
+    public static Comparator<VoicePacket> COMPARE_BY_CHECKSUM = Comparator.comparingInt(VoicePacket::getSequenceId);
 }

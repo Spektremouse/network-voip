@@ -1,30 +1,39 @@
 package models;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
- * Created by thomaspachico on 10/02/2017.
+ * Creates sequenced VoicePacket instances that are ready for transmission to a Datagram socket.
+ * Reads a Datagram sockets payload and converts into a VoicePacket instance.
  */
 public class PacketIO
 {
-    private int mChecksum;
+    private int mSequenceId;
     private final static int HEADER_SIZE = 5;
     public static final int PACKET_SIZE = 517;
 
+    /**
+     * Creates a new instance of the PacketIO object with the sequence identifier starting at 0.
+     */
     public PacketIO()
     {
-        mChecksum = 0;
+        mSequenceId = 0;
     }
 
-    public VoicePacket generatePacket(byte [] payload, TransmissionType type) throws IOException
+    /**
+     *
+     * @param payload
+     * @param type
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public VoicePacket generatePacket(byte [] payload, TransmissionType type) throws IllegalArgumentException
     {
-        if (mChecksum < 65535) {
-            mChecksum++;
+        if (mSequenceId < 65535) {
+            mSequenceId++;
         } else {
-            mChecksum = 0;
+            mSequenceId = 0;
         }
 
         if(payload.length != 512)
@@ -32,18 +41,23 @@ public class PacketIO
             throw new IllegalArgumentException("Invalid payload size");
         }
 
-        return new VoicePacket(mChecksum, payload, type);
+        return new VoicePacket(mSequenceId, payload, type);
     }
 
+    /**
+     *
+     * @param data
+     * @return
+     */
     public VoicePacket unpackPacket(byte [] data)
     {
         byte [] header = new byte[HEADER_SIZE];
-        //checksum
+        //Sequence ID for a packet found in first 4 bytes of the header.
         header[0] = data[0];
         header[1] = data[1];
         header[2] = data[2];
         header[3] = data[3];
-        //packet type
+        //Single byte used to identify the transmission type.
         int type = data[4];
 
         byte [] payload = Arrays.copyOfRange(data, HEADER_SIZE, data.length);
@@ -51,7 +65,7 @@ public class PacketIO
         return new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
     }
 
-    //unpacking a packet
+    //Converts a byte [] into a 32 bit integer.
     private int bytesToInt(byte [] a)
     {
         ByteBuffer wrapped = ByteBuffer.wrap(a);

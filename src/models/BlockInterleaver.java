@@ -4,16 +4,20 @@ import java.security.InvalidParameterException;
 import java.util.Vector;
 
 /**
- * Created by thomaspachico on 07/02/2017.
+ * Re-orders the sequence of packets before transmission.
+ * The idea is that if a burst of loss occurs in the network, consecutive data will not be lost.
  */
-public class Interleaver
+public class BlockInterleaver
 {
-
+    private VoicePacket[][] mBlock;
     private int mSize;
 
-    private VoicePacket[][] mBlock;
-
-    public void setBlock(Vector<VoicePacket> packetList)
+    /**
+     *
+     * @param packetList
+     * @throws InvalidParameterException
+     */
+    public void setBlock(Vector<VoicePacket> packetList) throws InvalidParameterException
     {
         double root = Math.sqrt(packetList.size());
 
@@ -30,10 +34,8 @@ public class Interleaver
 
         int count = 0;
 
-        //rows
         for(int row = 0; row < mSize; row++)
         {
-            //columns
             for(int col = 0; col < mSize; col++)
             {
                 mBlock[row][col] = packetList.elementAt(count);
@@ -42,6 +44,10 @@ public class Interleaver
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public Vector<VoicePacket> rotateRight()
     {
         VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
@@ -58,7 +64,6 @@ public class Interleaver
 
         for(int row = 0; row < mSize; row++)
         {
-            //columns
             for(int col = 0; col < mSize; col++)
             {
                 packetList.add(rotated[row][col]);
@@ -67,6 +72,10 @@ public class Interleaver
         return packetList;
     }
 
+    /**
+     *
+     * @return
+     */
     public Vector<VoicePacket> rotateLeft()
     {
         VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
@@ -83,7 +92,6 @@ public class Interleaver
 
         for(int row = 0; row < mSize; row++)
         {
-            //columns
             for(int col = 0; col < mSize; col++)
             {
                 packetList.add(rotated[row][col]);

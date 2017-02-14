@@ -7,13 +7,13 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.util.Collections;
-import java.util.Vector;
 
 /**
  * Created by thomaspachico on 07/02/2017.
  */
 
-public class ReceiverThread implements Runnable {
+public class ReceiverThread implements Runnable
+{
 
     private static final int TIMEOUT = 32;
     private static final int PORT = 55321;
@@ -171,7 +171,7 @@ public class ReceiverThread implements Runnable {
 
                 for (VoicePacket voip: mStrategy.getVoiceVector()
                         ) {
-                    System.out.println(voip.getChecksum());
+                    System.out.println(voip.getSequenceId());
 
                 }
 

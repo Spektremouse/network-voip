@@ -3,21 +3,21 @@ package models;
 import interfaces.IStrategy;
 
 /**
- * Fills gaps in voice transmission with silence.
+ *
  */
-public class FillingStrategy extends GenericStrategy implements IStrategy
+public class RepetitionStrategy extends GenericStrategy implements IStrategy
 {
 
     /**
      * Default constructor which calls GenericStrategy parent constructor.
      */
-    public FillingStrategy()
+    public RepetitionStrategy()
     {
         super();
     }
 
     /**
-     * Adds a packet to the FillingStrategy buffer.
+     * Adds a packet to the RepetitionStrategy buffer.
      * @param packet The packet to be added to the buffer.
      */
     @Override
@@ -26,16 +26,17 @@ public class FillingStrategy extends GenericStrategy implements IStrategy
         mVoiceVector.add(packet);
     }
 
-
     /**
-     * Adds an empty packet to the buffer.
+     * Adds a copy of the last added packet to the buffer.
      * @return True if the buffer can continue being read.
      */
     @Override
     public boolean handlePacketLoss()
     {
-        mVoiceVector.add(new VoicePacket(mVoiceVector.lastElement().getSequenceId()+1,
-                new byte[512], TransmissionType.VOICE));
+        if(mVoiceVector.size() != 0 )
+        {
+            mVoiceVector.add(mVoiceVector.lastElement());
+        }
         return true;
     }
 }

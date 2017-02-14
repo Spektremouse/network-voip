@@ -10,7 +10,8 @@ import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.Vector;
 
-public class SenderThread implements Runnable {
+public class SenderThread implements Runnable
+{
 
     private static final int RECORDING_TIME = 35;
     private static final int PORT = 55321;
@@ -142,7 +143,7 @@ public class SenderThread implements Runnable {
                 {
                     if(mIsInterleave)
                     {
-                        Interleaver interleaver = new Interleaver();
+                        BlockInterleaver interleaver = new BlockInterleaver();
                         interleaver.setBlock(buffer);
                         buffer = interleaver.rotateLeft();
                     }
