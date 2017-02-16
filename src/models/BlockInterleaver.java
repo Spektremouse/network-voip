@@ -1,9 +1,7 @@
 package models;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Re-orders the sequence of packets before transmission.
@@ -12,14 +10,24 @@ import java.util.Vector;
 public class BlockInterleaver
 {
     private VoicePacket[][] mBlock;
+    private boolean mIsBlockSet = false;
     private int mSize;
 
     /**
-     *
-     * @param packetList
-     * @throws InvalidParameterException
+     * Determines if the BlockInterleaver instance has a block.
+     * @return True if the block has been set.
      */
-    public void setBlock(List<VoicePacket> packetList) throws InvalidParameterException
+    public boolean isBlockSet()
+    {
+        return  mIsBlockSet;
+    }
+
+    /**
+     * Sets the block as a 2D array of VoicePackets given a List.
+     * @param packetList The list to convert into an NxN matrix.
+     * @throws IllegalArgumentException Occurs when the list size is not a perfect square root.
+     */
+    public void setBlock(List<VoicePacket> packetList) throws IllegalArgumentException
     {
         double root = Math.sqrt(packetList.size());
 
@@ -27,7 +35,7 @@ public class BlockInterleaver
 
         if(rem != 0)
         {
-            throw new InvalidParameterException("Packet list size must be a perfect square.");
+            throw new IllegalArgumentException("Packet list size must be a perfect square.");
         }
 
         mSize = (int)root;
@@ -44,61 +52,78 @@ public class BlockInterleaver
                 count++;
             }
         }
+        mIsBlockSet = true;
     }
 
     /**
-     *
-     * @return
+     * Rotates the currently set block 90 degrees to the right.
+     * @return Returns the rotated block as a linear list.
+     * @throws IllegalArgumentException Occurs when the block has not been set.
      */
-    public List<VoicePacket> rotateRight()
+    public List<VoicePacket> rotateRight() throws IllegalArgumentException
     {
-        VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
-
-        for(int row = 0; row < mSize; row++)
+        if(mIsBlockSet == true)
         {
-            for(int col = 0; col < mSize; col++)
+            VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
+
+            for(int row = 0; row < mSize; row++)
             {
-                rotated[col][mSize-1-row] = mBlock[row][col];
+                for(int col = 0; col < mSize; col++)
+                {
+                    rotated[col][mSize-1-row] = mBlock[row][col];
+                }
             }
+
+            List<VoicePacket> packetList = new ArrayList<>();
+
+            for(int row = 0; row < mSize; row++)
+            {
+                for(int col = 0; col < mSize; col++)
+                {
+                    packetList.add(rotated[row][col]);
+                }
+            }
+            return packetList;
         }
-
-        List<VoicePacket> packetList = new ArrayList<>();
-
-        for(int row = 0; row < mSize; row++)
+        else
         {
-            for(int col = 0; col < mSize; col++)
-            {
-                packetList.add(rotated[row][col]);
-            }
+            throw new IllegalArgumentException("Block has not been set.");
         }
-        return packetList;
     }
 
     /**
-     *
-     * @return
+     * Rotates the currently set block 90 degrees to the left.
+     * @return Returns the rotated block as a linear list.
+     * @throws IllegalArgumentException Occurs when the block has not been set.
      */
-    public List<VoicePacket> rotateLeft()
+    public List<VoicePacket> rotateLeft() throws IllegalArgumentException
     {
-        VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
-
-        for(int row = 0; row < mSize; row++)
+        if(mIsBlockSet == true)
         {
-            for(int col = 0; col < mSize; col++)
+            VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
+
+            for(int row = 0; row < mSize; row++)
             {
-                rotated[mSize-1-col][row] = mBlock[row][col];
+                for(int col = 0; col < mSize; col++)
+                {
+                    rotated[mSize-1-col][row] = mBlock[row][col];
+                }
             }
+
+            List<VoicePacket> packetList = new ArrayList<>();
+
+            for(int row = 0; row < mSize; row++)
+            {
+                for(int col = 0; col < mSize; col++)
+                {
+                    packetList.add(rotated[row][col]);
+                }
+            }
+            return packetList;
         }
-
-        List<VoicePacket> packetList = new ArrayList<>();
-
-        for(int row = 0; row < mSize; row++)
+        else
         {
-            for(int col = 0; col < mSize; col++)
-            {
-                packetList.add(rotated[row][col]);
-            }
+            throw new IllegalArgumentException("Block has not been set.");
         }
-        return packetList;
     }
 }
