@@ -34,7 +34,7 @@ public class FillingStrategy extends GenericStrategy implements IStrategy
     @Override
     public boolean handlePacketLoss()
     {
-        mVoiceVector.add(new VoicePacket(mVoiceVector.lastElement().getSequenceId()+1,
+        mVoiceVector.add(new VoicePacket(mVoiceVector.get(mVoiceVector.size()-1).getSequenceId()+1,
                 new byte[512], TransmissionType.VOICE));
         return true;
     }
