@@ -47,6 +47,7 @@ public class ReceiverThread implements Runnable
             System.out.println("ERROR: TextReceiver: Could not open UDP socket to receive from.");
             e.printStackTrace();
             System.exit(0);
+            //TODO Handle exception
         }
 
         //Buffer
@@ -67,11 +68,13 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException ex)
             {
                 //ex.printStackTrace();
+                //TODO Handle exception
             }
             catch (IOException ex)
             {
                 ex.printStackTrace();
                 System.exit(1);
+                //TODO Handle exception
             }
         }
 
@@ -134,10 +137,12 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException ex)
             {
                 receiving = false;
+                //TODO Handle exception
             }
             catch (IOException ex)
             {
                 ex.printStackTrace();
+                //TODO Handle exception
             }
         }
 
@@ -204,10 +209,12 @@ public class ReceiverThread implements Runnable
             {
                 isPlayable = mStrategy.handlePacketLoss();
                 System.out.println("Timeout.");
+                //TODO Handle exception
             }
             catch (IOException ex)
             {
                 ex.printStackTrace();
+                //TODO Handle exception
             }
         }
         mPlayer.close();

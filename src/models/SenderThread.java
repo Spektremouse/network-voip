@@ -71,6 +71,7 @@ public class SenderThread implements Runnable
             System.out.println("ERROR: SenderThread: Could not find client IP");
             e.printStackTrace();
             System.exit(0);
+            //TODO Handle exception
         }
 
         switch (mCurrentTansmissionType)
@@ -116,6 +117,7 @@ public class SenderThread implements Runnable
         catch (InterruptedException ex)
         {
             ex.printStackTrace();
+            //TODO Handle exception
         }
 
     }
@@ -128,7 +130,8 @@ public class SenderThread implements Runnable
         try
         {
             mRecorder = new AudioRecorder();
-        } catch (LineUnavailableException ex)
+        }
+        catch (LineUnavailableException ex)
         {
             //TODO handle LineUnavailable exception
         }
@@ -164,6 +167,7 @@ public class SenderThread implements Runnable
         catch (IOException ex)
         {
             ex.printStackTrace();
+            //TODO Handle exception
         }
 
         mRecorder.close();
