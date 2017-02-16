@@ -1,6 +1,9 @@
 package models;
 
 import interfaces.IStrategy;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -8,14 +11,14 @@ import java.util.Vector;
  */
 public class GenericStrategy implements IStrategy
 {
-    protected Vector<VoicePacket> mVoiceVector;
+    protected List<VoicePacket> mVoiceVector;
 
     /**
      * Default constructor for a GenericStrategy
      */
     public GenericStrategy()
     {
-        mVoiceVector = new Vector<>();
+        mVoiceVector = new ArrayList<>();
     }
 
     /**
@@ -23,7 +26,7 @@ public class GenericStrategy implements IStrategy
      * @return The current buffer.
      */
     @Override
-    public Vector<VoicePacket> getVoiceVector()
+    public List<VoicePacket> getVoiceVector()
     {
         return mVoiceVector;
     }
@@ -33,7 +36,7 @@ public class GenericStrategy implements IStrategy
      * @param buffer The new buffer to be used.
      */
     @Override
-    public void setVoiceVector(Vector<VoicePacket> buffer)
+    public void setVoiceVector(List<VoicePacket> buffer)
     {
         mVoiceVector = buffer;
     }

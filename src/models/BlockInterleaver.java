@@ -1,6 +1,8 @@
 package models;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -17,7 +19,7 @@ public class BlockInterleaver
      * @param packetList
      * @throws InvalidParameterException
      */
-    public void setBlock(Vector<VoicePacket> packetList) throws InvalidParameterException
+    public void setBlock(List<VoicePacket> packetList) throws InvalidParameterException
     {
         double root = Math.sqrt(packetList.size());
 
@@ -38,7 +40,7 @@ public class BlockInterleaver
         {
             for(int col = 0; col < mSize; col++)
             {
-                mBlock[row][col] = packetList.elementAt(count);
+                mBlock[row][col] = packetList.get(count);
                 count++;
             }
         }
@@ -48,7 +50,7 @@ public class BlockInterleaver
      *
      * @return
      */
-    public Vector<VoicePacket> rotateRight()
+    public List<VoicePacket> rotateRight()
     {
         VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
 
@@ -60,7 +62,7 @@ public class BlockInterleaver
             }
         }
 
-        Vector<VoicePacket> packetList = new Vector<>();
+        List<VoicePacket> packetList = new ArrayList<>();
 
         for(int row = 0; row < mSize; row++)
         {
@@ -76,7 +78,7 @@ public class BlockInterleaver
      *
      * @return
      */
-    public Vector<VoicePacket> rotateLeft()
+    public List<VoicePacket> rotateLeft()
     {
         VoicePacket[][] rotated = new VoicePacket[mSize][mSize];
 
@@ -88,7 +90,7 @@ public class BlockInterleaver
             }
         }
 
-        Vector<VoicePacket> packetList = new Vector<>();
+        List<VoicePacket> packetList = new ArrayList<>();
 
         for(int row = 0; row < mSize; row++)
         {

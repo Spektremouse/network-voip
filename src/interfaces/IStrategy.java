@@ -1,15 +1,16 @@
 package interfaces;
 
 import models.VoicePacket;
-import java.util.Vector;
+
+import java.util.List;
 
 /**
  *
  */
 public interface IStrategy
 {
-    Vector<VoicePacket> getVoiceVector();
-    void setVoiceVector(Vector<VoicePacket> buffer);
+    List<VoicePacket> getVoiceVector();
+    void setVoiceVector(List<VoicePacket> buffer);
     void addPacket(VoicePacket packet);
     boolean handlePacketLoss();
 }

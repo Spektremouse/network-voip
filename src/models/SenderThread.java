@@ -8,6 +8,8 @@ import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 public class SenderThread implements Runnable
@@ -120,7 +122,7 @@ public class SenderThread implements Runnable
 
     private void sendVoiceTransmission()
     {
-        Vector<VoicePacket> buffer = new Vector<>();
+        List<VoicePacket> buffer = new ArrayList<>();
 
         System.out.println("Recording...");
         try

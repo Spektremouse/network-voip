@@ -9,9 +9,8 @@ import java.net.*;
 import java.util.Collections;
 
 /**
- * Created by thomaspachico on 07/02/2017.
+ *
  */
-
 public class ReceiverThread implements Runnable
 {
 
@@ -76,7 +75,7 @@ public class ReceiverThread implements Runnable
             }
         }
 
-        switch (mStrategy.getVoiceVector().elementAt(0).getCurrentType())
+        switch (mStrategy.getVoiceVector().get(0).getCurrentType())
         {
             case VOICE:
                 receiveVoiceTransmission();
@@ -177,7 +176,7 @@ public class ReceiverThread implements Runnable
 
                 if(isPlayable)
                 {
-                    mPlayer.playBlock(mStrategy.getVoiceVector().elementAt(currentPlace).getPayload());
+                    mPlayer.playBlock(mStrategy.getVoiceVector().get(currentPlace).getPayload());
                     currentPlace++;
                 }
 

@@ -35,7 +35,7 @@ public class RepetitionStrategy extends GenericStrategy implements IStrategy
     {
         if(mVoiceVector.size() != 0 )
         {
-            mVoiceVector.add(mVoiceVector.lastElement());
+            mVoiceVector.add(mVoiceVector.get(mVoiceVector.size()-1));
         }
         return true;
     }
