@@ -4,20 +4,20 @@ import CMPC3M06.AudioRecorder;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
 import uk.ac.uea.cmp.voip.DatagramSocket4;
+
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 public class SenderThread implements Runnable
 {
 
     private static final int RECORDING_TIME = 35;
     private static final int PORT = 55321;
-    private TransmissionType mCurrentTansmissionType;
+    private TransmissionType mCurrentTransmissionType;
     private PacketIO mPacketiser;
     private InetAddress mClientIP;
     private boolean mIsInterleave = false;
@@ -49,7 +49,7 @@ public class SenderThread implements Runnable
 
         mPacketiser = new PacketIO();
         mHostname = hostname;
-        mCurrentTansmissionType = type;
+        mCurrentTransmissionType = type;
         mIsInterleave = isInterleave;
     }
 
@@ -74,7 +74,7 @@ public class SenderThread implements Runnable
             //TODO Handle exception
         }
 
-        switch (mCurrentTansmissionType)
+        switch (mCurrentTransmissionType)
         {
             case TEST:
                 sendTestTransmission();
@@ -160,7 +160,6 @@ public class SenderThread implements Runnable
                         mSendingSocket.send(datagram);
                     }
                     buffer.clear();
-
                 }
             }
         }

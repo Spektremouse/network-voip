@@ -1,11 +1,9 @@
 package models;
 
-import interfaces.IStrategy;
-
 /**
  * Fills gaps in voice transmission with silence.
  */
-public class FillingStrategy extends GenericStrategy implements IStrategy
+public class FillingStrategy extends GenericStrategy
 {
 
     /**

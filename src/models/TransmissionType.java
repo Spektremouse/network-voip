@@ -19,7 +19,6 @@ public enum TransmissionType
 
     private int code;
 
-
     TransmissionType(int code)
     {
         this.code = code;

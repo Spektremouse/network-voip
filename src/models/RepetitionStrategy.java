@@ -1,11 +1,9 @@
 package models;
 
-import interfaces.IStrategy;
-
 /**
  *
  */
-public class RepetitionStrategy extends GenericStrategy implements IStrategy
+public class RepetitionStrategy extends GenericStrategy
 {
 
     /**

@@ -121,5 +121,5 @@ public class VoicePacket implements Comparable<VoicePacket>
     /**
      *
      */
-    public static Comparator<VoicePacket> COMPARE_BY_CHECKSUM = Comparator.comparingInt(VoicePacket::getSequenceId);
+    public static Comparator<VoicePacket> COMPARE_BY_SEQUENCE = Comparator.comparingInt(VoicePacket::getSequenceId);
 }

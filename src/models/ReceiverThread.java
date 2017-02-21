@@ -1,11 +1,15 @@
 package models;
 
+import interfaces.IStrategy;
 import CMPC3M06.AudioPlayer;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
-import interfaces.IStrategy;
+import uk.ac.uea.cmp.voip.DatagramSocket3;
+import uk.ac.uea.cmp.voip.DatagramSocket4;
+
 import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.net.*;
+import java.security.InvalidParameterException;
 import java.util.Collections;
 
 /**
@@ -18,12 +22,31 @@ public class ReceiverThread implements Runnable
     private static final int PORT = 55321;
     private PacketIO mPacketiser;
 
-    private static DatagramSocket2 mReceivingSocket;
+    private static DatagramSocket mReceivingSocket;
     private AudioPlayer mPlayer;
     private IStrategy mStrategy;
 
-    public ReceiverThread(IStrategy strategy)
+    public ReceiverThread(IStrategy strategy, DatagramType socketType) throws SocketException
     {
+        switch (socketType)
+        {
+            case DEFAULT:
+                mReceivingSocket = new DatagramSocket(PORT);
+                break;
+            case SOCKET2:
+                mReceivingSocket = new DatagramSocket2(PORT);
+                break;
+            case SOCKET3:
+                mReceivingSocket = new DatagramSocket3(PORT);
+                break;
+            case SOCKET4:
+                mReceivingSocket = new DatagramSocket4(PORT);
+                break;
+            default:
+                throw new InvalidParameterException("Invalid socket type.");
+        }
+
+        mReceivingSocket.setSoTimeout(TIMEOUT);
         mPacketiser = new PacketIO();
         mStrategy = strategy;
     }
@@ -35,21 +58,6 @@ public class ReceiverThread implements Runnable
 
     public void run ()
     {
-        //***************************************************
-        //Open a socket to receive from on port PORT
-        try
-        {
-            mReceivingSocket = new DatagramSocket2(PORT);
-            mReceivingSocket.setSoTimeout(TIMEOUT);
-        }
-        catch (SocketException e)
-        {
-            System.out.println("ERROR: TextReceiver: Could not open UDP socket to receive from.");
-            e.printStackTrace();
-            System.exit(0);
-            //TODO Handle exception
-        }
-
         //Buffer
         while(mStrategy.getVoiceVector().size() < 4)
         {
@@ -171,7 +179,7 @@ public class ReceiverThread implements Runnable
         {
             try
             {
-                Collections.sort(mStrategy.getVoiceVector(),VoicePacket.COMPARE_BY_CHECKSUM);
+                Collections.sort(mStrategy.getVoiceVector(),VoicePacket.COMPARE_BY_SEQUENCE);
 
                 for (VoicePacket voip: mStrategy.getVoiceVector()
                         ) {
