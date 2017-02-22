@@ -71,7 +71,7 @@ public class ReceiverThread implements Runnable
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
                 mStrategy.getVoiceVector().add(vp);
-                System.out.println("Unknown packet added to queue!");
+                //System.out.println("Unknown packet added to queue!");
             }
             catch (SocketTimeoutException ex)
             {
@@ -181,12 +181,6 @@ public class ReceiverThread implements Runnable
             {
                 Collections.sort(mStrategy.getVoiceVector(),VoicePacket.COMPARE_BY_SEQUENCE);
 
-                for (VoicePacket voip: mStrategy.getVoiceVector()
-                        ) {
-                    System.out.println(voip.getSequenceId());
-
-                }
-
                 if(isPlayable)
                 {
                     mPlayer.playBlock(mStrategy.getVoiceVector().get(currentPlace).getPayload());
@@ -205,7 +199,6 @@ public class ReceiverThread implements Runnable
                 if(vp.getCurrentType() != null)
                 {
                     mStrategy.getVoiceVector().add(vp);
-                    System.out.println("Voice packet added to queue!");
                 }
 
                 if(currentPlace == 938)
@@ -216,7 +209,7 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException e)
             {
                 isPlayable = mStrategy.handlePacketLoss();
-                System.out.println("Timeout.");
+                //System.out.println("Timeout.");
                 //TODO Handle exception
             }
             catch (IOException ex)

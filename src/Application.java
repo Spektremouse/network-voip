@@ -7,14 +7,13 @@ public class Application {
         //192.168.0.21
         //192.168.0.11
 
-        SplicingStrategy splice = new SplicingStrategy();
         FillingStrategy fill = new FillingStrategy();
         RepetitionStrategy repeat = new RepetitionStrategy();
         GenericStrategy generic = new GenericStrategy();
 
-        ReceiverThread receiver = new ReceiverThread(splice);
+        ReceiverThread receiver = new ReceiverThread(repeat, DatagramType.SOCKET2);
         SenderThread sender = new SenderThread("localhost", DatagramType.SOCKET2,
-                TransmissionType.VOICE, true);
+                TransmissionType.VOICE, false);
 
         receiver.start();
         sender.start();
