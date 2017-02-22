@@ -59,7 +59,7 @@ public class GenericStrategy implements IStrategy
     public boolean handlePacketLoss()
     {
         mVoiceVector.add(new VoicePacket(mVoiceVector.get(mVoiceVector.size()-1).getSequenceId()+1,
-                new byte[512], TransmissionType.VOICE));)
+                new byte[512], TransmissionType.VOICE));
         return true;
     }
 }

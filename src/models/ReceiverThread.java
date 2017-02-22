@@ -173,6 +173,7 @@ public class ReceiverThread implements Runnable
 
         boolean running = true;
         int currentPlace = 0;
+        int timeoutCount = 0;
         boolean isPlayable = true;
 
         while (running)
@@ -210,6 +211,12 @@ public class ReceiverThread implements Runnable
             {
                 isPlayable = mStrategy.handlePacketLoss();
                 System.out.println("Timeout.");
+                timeoutCount++;
+                if(timeoutCount > 3)
+                {
+                    timeoutCount = 0;
+                    currentPlace--;
+                }
                 //TODO Handle exception
             }
             catch (IOException ex)
