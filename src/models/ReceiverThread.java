@@ -209,7 +209,7 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException e)
             {
                 isPlayable = mStrategy.handlePacketLoss();
-                //System.out.println("Timeout.");
+                System.out.println("Timeout.");
                 //TODO Handle exception
             }
             catch (IOException ex)

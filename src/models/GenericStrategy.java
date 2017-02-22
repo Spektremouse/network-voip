@@ -56,7 +56,10 @@ public class GenericStrategy implements IStrategy
      * @return True if the buffer can continue being read.
      */
     @Override
-    public boolean handlePacketLoss() {
+    public boolean handlePacketLoss()
+    {
+        mVoiceVector.add(new VoicePacket(mVoiceVector.get(mVoiceVector.size()-1).getSequenceId()+1,
+                new byte[512], TransmissionType.VOICE));)
         return true;
     }
 }
