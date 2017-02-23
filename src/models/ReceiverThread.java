@@ -58,7 +58,9 @@ public class ReceiverThread implements Runnable
 
     public void run ()
     {
-        //Buffer
+        System.out.println("Starting receiver...");
+
+        System.out.println("Filling initial buffer...");
         while(mStrategy.getVoiceVector().size() < 4)
         {
             try
@@ -77,16 +79,16 @@ public class ReceiverThread implements Runnable
             }
             catch (SocketTimeoutException ex)
             {
-                //ex.printStackTrace();
-                //TODO Handle exception
+                System.out.println("A timeout occurred while waiting for the buffer to fill.");
             }
             catch (IOException ex)
             {
+                System.out.println(ex.getMessage());
                 ex.printStackTrace();
                 System.exit(1);
-                //TODO Handle exception
             }
         }
+        System.out.println("Initial buffer filled.");
 
         switch (mStrategy.getVoiceVector().get(0).getCurrentType())
         {
@@ -100,20 +102,16 @@ public class ReceiverThread implements Runnable
                 break;
         }
 
-        for (VoicePacket vp : mStrategy.getVoiceVector())
-        {
-            System.out.println(vp.toString());
-        }
-
-        //Close the socket
         if(!mReceivingSocket.isClosed())
         {
             mReceivingSocket.close();
         }
+        System.out.println("Finished receiver.");
     }
 
     public void receiveTestTransmission()
     {
+        System.out.println("Running test receiver...");
         boolean receiving = true;
 
         try
@@ -122,7 +120,9 @@ public class ReceiverThread implements Runnable
         }
         catch (SocketException ex)
         {
-            //TODO Handle Socket exception
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(1);
         }
 
         while(receiving)
@@ -144,30 +144,33 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException ex)
             {
                 receiving = false;
-                //TODO Handle exception
             }
             catch (IOException ex)
             {
+                System.out.println(ex.getMessage());
                 ex.printStackTrace();
-                //TODO Handle exception
+                System.exit(1);
             }
         }
 
-        //System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/2000");
-        //System.out.println("Total packets lost: "+(2000-mStrategy.getVoiceVector().size()));
+        System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/2000");
+        System.out.println("Total packets lost: "+(2000-mStrategy.getVoiceVector().size()));
+        System.out.println("Finished test receiver.");
     }
 
     public void receiveVoiceTransmission()
     {
+        System.out.println("Running voice receiver...");
+
         try
         {
             mPlayer = new AudioPlayer();
         }
         catch (LineUnavailableException ex)
         {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
             System.exit(1);
-            //TODO handle LineUnavailable exception
         }
 
         boolean running = true;
@@ -212,15 +215,16 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException e)
             {
                 isPlayable = mStrategy.handlePacketLoss();
-                //TODO Handle exception
             }
             catch (IOException ex)
             {
+                System.out.println(ex.getMessage());
                 ex.printStackTrace();
-                //TODO Handle exception
+                System.exit(1);
             }
         }
         mPlayer.close();
+        System.out.println("Finished voice receiver.");
     }
 }
 

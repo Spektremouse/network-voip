@@ -53,22 +53,27 @@ public class SenderThread implements Runnable
         mIsInterleave = isInterleave;
     }
 
-    public void start() {
+    public void start()
+    {
         Thread thread = new Thread(this);
         thread.start();
     }
 
-    public void run() {
-
+    public void run()
+    {
+        System.out.println("Starting sender...");
         try
         {
+            System.out.println("Resolving connection to: "+mHostname);
             mClientIP = InetAddress.getByName(mHostname);
+            System.out.println("Connection successful to: "+mClientIP.toString());
         }
-        catch (UnknownHostException e)
+        catch (UnknownHostException ex)
         {
-            e.printStackTrace();
-            System.exit(0);
-            //TODO Handle exception
+            System.out.println("Connection unsuccessful. Could not resolve host: "+mHostname);
+            ex.printStackTrace();
+            System.exit(1);
+            //TODO dangerous
         }
 
         switch (mCurrentTransmissionType)
@@ -87,10 +92,12 @@ public class SenderThread implements Runnable
         {
             mSendingSocket.close();
         }
+        System.out.println("Finished sender.");
     }
 
     private void sendTestTransmission()
     {
+        System.out.println("Running test transmission...");
         try
         {
             for (int i = 0; i < 2000; i++)
@@ -104,22 +111,27 @@ public class SenderThread implements Runnable
 
                 mSendingSocket.send(datagram);
             }
+            System.out.println("Finished test transmission.");
         }
         catch (IOException ex)
         {
-            //TODO handle IO exception
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(1);
         }
 
         catch (InterruptedException ex)
         {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
-            //TODO Handle exception
+            System.exit(1);
         }
-
     }
 
     private void sendVoiceTransmission()
     {
+        System.out.println("Running voice transmission...");
+
         List<VoicePacket> buffer = new ArrayList<>();
 
         try
@@ -128,7 +140,9 @@ public class SenderThread implements Runnable
         }
         catch (LineUnavailableException ex)
         {
-            //TODO handle LineUnavailable exception
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+            System.exit(1);
         }
 
         try
@@ -160,10 +174,12 @@ public class SenderThread implements Runnable
         }
         catch (IOException ex)
         {
+            System.out.println(ex.getMessage());
             ex.printStackTrace();
-            //TODO Handle exception
+            System.exit(1);
         }
 
         mRecorder.close();
+        System.out.println("Finished voice transmission.");
     }
 }
