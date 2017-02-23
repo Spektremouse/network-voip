@@ -4,7 +4,6 @@ import interfaces.IStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * A generic strategy that does not handle gaps in voice transmission.

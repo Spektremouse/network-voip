@@ -84,7 +84,6 @@ public class PacketIO
         }
         else
         {
-            System.out.println("Received checksum:"+checksum+" // Generated Checksum:"+packet.getChecksum());
             return null;
         }
     }
@@ -111,7 +110,5 @@ public class PacketIO
         packetTotal += packet.getCurrentType().getCode();
 
         packet.setChecksum(packetTotal % divisor);
-
-        System.out.println("Packet #"+packet.getSequenceId()+" checksum equals:"+packet.getChecksum());
     }
 }

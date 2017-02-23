@@ -59,16 +59,13 @@ public class SenderThread implements Runnable
     }
 
     public void run() {
-        System.out.println("Sending...");
 
         try
         {
             mClientIP = InetAddress.getByName(mHostname);
-            System.out.println(mClientIP.toString());
         }
         catch (UnknownHostException e)
         {
-            System.out.println("ERROR: SenderThread: Could not find client IP");
             e.printStackTrace();
             System.exit(0);
             //TODO Handle exception
@@ -90,7 +87,6 @@ public class SenderThread implements Runnable
         {
             mSendingSocket.close();
         }
-        System.out.println("Finished.");
     }
 
     private void sendTestTransmission()
@@ -126,7 +122,6 @@ public class SenderThread implements Runnable
     {
         List<VoicePacket> buffer = new ArrayList<>();
 
-        System.out.println("Recording...");
         try
         {
             mRecorder = new AudioRecorder();

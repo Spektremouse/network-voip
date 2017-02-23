@@ -70,8 +70,10 @@ public class ReceiverThread implements Runnable
 
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
-                mStrategy.getVoiceVector().add(vp);
-                //System.out.println("Unknown packet added to queue!");
+                if(vp != null)
+                {
+                    mStrategy.getVoiceVector().add(vp);
+                }
             }
             catch (SocketTimeoutException ex)
             {
@@ -120,9 +122,7 @@ public class ReceiverThread implements Runnable
         }
         catch (SocketException ex)
         {
-            System.out.println("RECEIVING TEST ERROR");
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
+            //TODO Handle Socket exception
         }
 
         while(receiving)
@@ -139,7 +139,6 @@ public class ReceiverThread implements Runnable
                 if(vp != null)
                 {
                     mStrategy.getVoiceVector().add(vp);
-                    System.out.println("Test packet added to queue!");
                 }
             }
             catch (SocketTimeoutException ex)
@@ -154,8 +153,8 @@ public class ReceiverThread implements Runnable
             }
         }
 
-        System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/2000");
-        System.out.println("Total packets lost: "+(2000-mStrategy.getVoiceVector().size()));
+        //System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/2000");
+        //System.out.println("Total packets lost: "+(2000-mStrategy.getVoiceVector().size()));
     }
 
     public void receiveVoiceTransmission()
@@ -213,7 +212,6 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException e)
             {
                 isPlayable = mStrategy.handlePacketLoss();
-                //System.out.println("Timeout.");
                 //TODO Handle exception
             }
             catch (IOException ex)

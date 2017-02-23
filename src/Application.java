@@ -25,7 +25,7 @@ public class Application {
 
         ReceiverThread receiver = new ReceiverThread(repeat, DatagramType.SOCKET4);
         SenderThread sender = new SenderThread("localhost", DatagramType.SOCKET4,
-                TransmissionType.TEST, true);
+                TransmissionType.VOICE, true);
 
         receiver.start();
         sender.start();
