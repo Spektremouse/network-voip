@@ -8,17 +8,18 @@ public class Application {
 
     public static void main(String[] args) throws Exception
     {
-        /*
+
         JFrame frame = new JFrame("MainForm");
         frame.setContentPane(new MainForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        frame.setSize(500,300);
         frame.setVisible(true);
-        */
+
 
         //192.168.0.21 - Sam
         //192.168.0.11 - Tom
 
+        /*
         FillingStrategy fill = new FillingStrategy();
         RepetitionStrategy repeat = new RepetitionStrategy();
         GenericStrategy generic = new GenericStrategy();
@@ -29,7 +30,7 @@ public class Application {
 
         receiver.start();
         sender.start();
-
+        */
     }
 
 

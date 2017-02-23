@@ -2,6 +2,7 @@ package models;
 
 import interfaces.IStrategy;
 import CMPC3M06.AudioPlayer;
+import interfaces.IThreadCallback;
 import uk.ac.uea.cmp.voip.DatagramSocket2;
 import uk.ac.uea.cmp.voip.DatagramSocket3;
 import uk.ac.uea.cmp.voip.DatagramSocket4;
@@ -17,6 +18,7 @@ import java.util.Collections;
  */
 public class ReceiverThread implements Runnable
 {
+    public StringBuilder mBuilder;
 
     private static final int TIMEOUT = 32;
     private static final int PORT = 55321;
@@ -26,7 +28,9 @@ public class ReceiverThread implements Runnable
     private AudioPlayer mPlayer;
     private IStrategy mStrategy;
 
-    public ReceiverThread(IStrategy strategy, DatagramType socketType) throws SocketException
+    private IThreadCallback mCallback;
+
+    public ReceiverThread(IStrategy strategy, DatagramType socketType, IThreadCallback callback) throws SocketException
     {
         switch (socketType)
         {
@@ -46,9 +50,11 @@ public class ReceiverThread implements Runnable
                 throw new InvalidParameterException("Invalid socket type.");
         }
 
+        mCallback = callback;
         mReceivingSocket.setSoTimeout(TIMEOUT);
         mPacketiser = new PacketIO();
         mStrategy = strategy;
+        mBuilder = new StringBuilder();
     }
 
     public void start(){
@@ -107,6 +113,7 @@ public class ReceiverThread implements Runnable
             mReceivingSocket.close();
         }
         System.out.println("Finished receiver.");
+        mCallback.onComplete();
     }
 
     private void receiveTestTransmission()
@@ -192,6 +199,11 @@ public class ReceiverThread implements Runnable
             }
         }
 
+        mBuilder.append("Total number of bursts: " + burstCount).append("\n")
+                .append("Largest burst size: " + largestBurst).append("\n")
+                .append("Packets Received: " + mStrategy.getVoiceVector().size() + "/" + sampleSize).append("\n")
+                .append("Total packets lost: " + (sampleSize - mStrategy.getVoiceVector().size())).append("\n");
+
         System.out.println("Total number of bursts: " + burstCount);
         System.out.println("Largest burst size: " + largestBurst);
         System.out.println("Packets Received: " + mStrategy.getVoiceVector().size() + "/" + sampleSize);
@@ -210,6 +222,8 @@ public class ReceiverThread implements Runnable
             }
         }
 
+        mBuilder.append("Total packets out of order: " + orderCount).append("\n");
+
         System.out.println("Total packets out of order: " + orderCount);
     }
 
@@ -226,6 +240,8 @@ public class ReceiverThread implements Runnable
         }
 
         mStrategy.getVoiceVector().removeAll(Collections.singleton(null));
+
+        mBuilder.append("Total packets corrupted: " + corruptCount).append("\n");
 
         System.out.println("Total packets corrupted: " + corruptCount);
     }
