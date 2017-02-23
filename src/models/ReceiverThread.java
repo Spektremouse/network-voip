@@ -299,7 +299,9 @@ public class ReceiverThread implements Runnable
                     mStrategy.handlePacketLoss();
                 }
 
-                if(currentPlace == 938)
+                System.out.println(currentPlace);
+
+                if(currentPlace >= 938)
                 {
                     running = false;
                 }
