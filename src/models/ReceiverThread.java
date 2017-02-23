@@ -113,6 +113,7 @@ public class ReceiverThread implements Runnable
     {
         System.out.println("Running test receiver...");
         boolean receiving = true;
+        int sampleSize = 200;
 
         try
         {
@@ -153,8 +154,41 @@ public class ReceiverThread implements Runnable
             }
         }
 
-        System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/2000");
-        System.out.println("Total packets lost: "+(2000-mStrategy.getVoiceVector().size()));
+        int burstSize = 0;
+        int burstCount = 0;
+        int largestBurst = 0;
+
+        int sequence = 1;
+
+        for (int i = 0; i < mStrategy.getVoiceVector().size(); i++)
+        {
+            System.out.println(mStrategy.getVoiceVector().get(i).toString());
+            if(sequence == mStrategy.getVoiceVector().get(i).getSequenceId())
+            {
+                sequence++;
+            }
+            else
+            {
+                burstCount++;
+                while(mStrategy.getVoiceVector().get(i).getSequenceId() != sequence)
+                {
+                    burstSize++;
+                    sequence++;
+                }
+
+                if(burstSize > largestBurst)
+                {
+                    largestBurst = burstSize;
+                }
+                burstSize = 0;
+                sequence++;
+            }
+        }
+
+        System.out.println("Total number of bursts: "+burstCount);
+        System.out.println("Largest burst size: "+largestBurst);
+        System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/"+sampleSize);
+        System.out.println("Total packets lost: "+(sampleSize-mStrategy.getVoiceVector().size()));
         System.out.println("Finished test receiver.");
     }
 

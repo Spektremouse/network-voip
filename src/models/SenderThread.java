@@ -98,9 +98,12 @@ public class SenderThread implements Runnable
     private void sendTestTransmission()
     {
         System.out.println("Running test transmission...");
+
+        int sampleSize = 200;
+
         try
         {
-            for (int i = 0; i < 2000; i++)
+            for (int i = 0; i < sampleSize; i++)
             {
                 VoicePacket vp = mPacketiser.generatePacket(new byte[512],TransmissionType.TEST);
 
