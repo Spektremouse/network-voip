@@ -13,10 +13,10 @@ public class VoicePacket implements Comparable<VoicePacket>
     private int mSequenceId;
 
     /**
-     *
-     * @param sequenceId
-     * @param payload
-     * @param type
+     * Constructor for a VoicePacket object.
+     * @param sequenceId The order number for the packet.
+     * @param payload The data to be transmitted, as opposed to automatically generated metadata.
+     * @param type Identifies the type of packet to be generated.
      */
     public VoicePacket(int sequenceId, byte [] payload, TransmissionType type)
     {
@@ -26,8 +26,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @return
+     * @return Returns the packets current TransmissionType.
      */
     public TransmissionType getCurrentType()
     {
@@ -35,8 +34,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @return
+     * @return Returns the packets current payload.
      */
     public byte[] getPayload()
     {
@@ -44,8 +42,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @param payload
+     * @param payload Sets the packets current payload.
      */
     public void setPayload(byte[] payload)
     {
@@ -53,8 +50,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @return
+     * @return Returns the packets sequence identifier.
      */
     public int getSequenceId()
     {
@@ -62,17 +58,15 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @param checksum
+     * @param sequenceId Sets the packets sequence identifier.
      */
-    public void setSequenceId(int checksum)
+    public void setSequenceId(int sequenceId)
     {
-        this.mSequenceId = checksum;
+        this.mSequenceId = sequenceId;
     }
 
     /**
-     *
-     * @return
+     * @return Returns the packets checksum value.
      */
     public int getChecksum()
     {
@@ -80,18 +74,17 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @param mChecksum
+     * @param checksum Sets the packets checksum value.
      */
-    public void setChecksum(int mChecksum)
+    public void setChecksum(int checksum)
     {
-        this.mChecksum = mChecksum;
+        this.mChecksum = checksum;
     }
 
     /**
-     *
-     * @return
-     * @throws IOException
+     * Returns the VoicePacket object as an array of bytes.
+     * @return The byte array which represents the VoicePacket object.
+     * @throws IOException Arises when an error occurs in the ByteArrayOutputStream.
      */
     public byte [] toByteArray() throws IOException
     {
@@ -106,7 +99,7 @@ public class VoicePacket implements Comparable<VoicePacket>
         return  data;
     }
 
-    //
+    //Converts an integer to an array of bytes.
     private byte [] intToBytes(int i)
     {
         ByteBuffer bb = ByteBuffer.allocate(4);
@@ -115,8 +108,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @return
+     * @return Returns the VoicePacket object represented as a string.
      */
     @Override
     public String toString()
@@ -125,9 +117,10 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
-     * @param vp
-     * @return
+     * Compares the VoicePacket object with the specified VoicePacket for order. Returns a zero, or a
+     * positive integer as this object is equal to, or greater than the specified VoicePacket object.
+     * @param vp The VoicePacket object to be compared.
+     * @return A zero, or a positive integer as this object equal to, or greater than the specified object.
      */
     @Override
     public int compareTo(VoicePacket vp)
@@ -139,7 +132,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     }
 
     /**
-     *
+     * A comparison function, which imposes a total ordering on a collection of VoicePacket objects.
      */
     public static Comparator<VoicePacket> COMPARE_BY_SEQUENCE = Comparator.comparingInt(VoicePacket::getSequenceId);
 }

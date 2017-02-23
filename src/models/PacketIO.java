@@ -22,10 +22,10 @@ public class PacketIO
     }
 
     /**
-     *
-     * @param payload
-     * @param type
-     * @return
+     * Generates a VoicePacket object based on the given parameters and automatically generates metadata.
+     * @param payload The data to be transmitted, as opposed to automatically generated metadata.
+     * @param type Identifies the type of packet to be generated.
+     * @return Returns a VoicePacket object created from the given parameters.
      * @throws IllegalArgumentException
      */
     public VoicePacket generatePacket(byte [] payload, TransmissionType type) throws IllegalArgumentException
@@ -49,9 +49,10 @@ public class PacketIO
     }
 
     /**
-     *
-     * @param data
-     * @return
+     * Generates a VoicePacket object based on the given parameter. Will return null VoicePacket objects if the
+     * parameter does not form a legitimate packet.
+     * @param data The data that has been transmitted and received in a socket.
+     * @return Returns a VoicePacket object with payload and metadata.
      */
     public VoicePacket unpackPacket(byte [] data)
     {
