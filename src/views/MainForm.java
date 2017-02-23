@@ -54,6 +54,8 @@ public class MainForm implements IThreadCallback
 
                     receiver.start();
                     sender.start();
+
+                    btn_connect.setEnabled(false);
                 }
                 catch (Exception ex)
                 {
@@ -61,6 +63,7 @@ public class MainForm implements IThreadCallback
                 }
             }
         });
+
         rbtn_generic.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -164,6 +167,21 @@ public class MainForm implements IThreadCallback
     @Override
     public void onComplete()
     {
-        JOptionPane.showMessageDialog(null, receiver.mBuilder.toString());
+        if(mTransmissionType == TransmissionType.TEST)
+        {
+            JOptionPane.showMessageDialog(null, receiver.mBuilder.toString());
+        }
+        else if(mTransmissionType == TransmissionType.VOICE)
+        {
+            JOptionPane.showMessageDialog(null, "Transmission complete!");
+        }
+        btn_connect.setEnabled(true);
+    }
+
+    @Override
+    public void onCanceled()
+    {
+        JOptionPane.showMessageDialog(null, "Transmission canceled.");
+        btn_connect.setEnabled(true);
     }
 }

@@ -88,10 +88,12 @@ public class SenderThread implements Runnable
                 throw new InvalidParameterException("Transmission type was not found.");
         }
 
+        /*
         if (!mSendingSocket.isClosed())
         {
             mSendingSocket.close();
         }
+        */
         System.out.println("Finished sender.");
     }
 
@@ -99,7 +101,7 @@ public class SenderThread implements Runnable
     {
         System.out.println("Running test transmission...");
 
-        int sampleSize = 200;
+        int sampleSize = 1000;
 
         try
         {
@@ -184,5 +186,10 @@ public class SenderThread implements Runnable
 
         mRecorder.close();
         System.out.println("Finished voice transmission.");
+    }
+
+    public void cancel()
+    {
+        Thread.currentThread().stop();
     }
 }

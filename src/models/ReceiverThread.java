@@ -30,6 +30,8 @@ public class ReceiverThread implements Runnable
 
     private IThreadCallback mCallback;
 
+    private boolean mRunning = true;
+
     public ReceiverThread(IStrategy strategy, DatagramType socketType, IThreadCallback callback) throws SocketException
     {
         switch (socketType)
@@ -112,7 +114,9 @@ public class ReceiverThread implements Runnable
         {
             mReceivingSocket.close();
         }
+
         System.out.println("Finished receiver.");
+        mStrategy.getVoiceVector().clear();
         mCallback.onComplete();
     }
 
@@ -121,7 +125,7 @@ public class ReceiverThread implements Runnable
         System.out.println("Running test receiver...");
 
         boolean receiving = true;
-        int sampleSize = 200;
+        int sampleSize = 1000;
 
         try
         {
@@ -313,6 +317,12 @@ public class ReceiverThread implements Runnable
         }
         mPlayer.close();
         System.out.println("Finished voice receiver.");
+    }
+
+    public void cancel()
+    {
+        Thread.currentThread().stop();
+        mCallback.onCanceled();
     }
 }
 

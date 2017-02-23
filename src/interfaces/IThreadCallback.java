@@ -2,5 +2,6 @@ package interfaces;
 
 public interface IThreadCallback
 {
-    public void onComplete();
+    void onComplete();
+    void onCanceled();
 }
