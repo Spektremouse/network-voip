@@ -109,9 +109,10 @@ public class ReceiverThread implements Runnable
         System.out.println("Finished receiver.");
     }
 
-    public void receiveTestTransmission()
+    private void receiveTestTransmission()
     {
         System.out.println("Running test receiver...");
+
         boolean receiving = true;
         int sampleSize = 200;
 
@@ -137,10 +138,7 @@ public class ReceiverThread implements Runnable
 
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
-                if(vp != null)
-                {
-                    mStrategy.getVoiceVector().add(vp);
-                }
+                mStrategy.getVoiceVector().add(vp);
             }
             catch (SocketTimeoutException ex)
             {
@@ -154,6 +152,16 @@ public class ReceiverThread implements Runnable
             }
         }
 
+        analysePacketCorruption();
+        analysePacketOrder();
+        Collections.sort(mStrategy.getVoiceVector(),VoicePacket.COMPARE_BY_SEQUENCE);
+        analysePacketLoss(sampleSize);
+
+        System.out.println("Finished test receiver.");
+    }
+
+    private void analysePacketLoss(int sampleSize)
+    {
         int burstSize = 0;
         int burstCount = 0;
         int largestBurst = 0;
@@ -162,7 +170,6 @@ public class ReceiverThread implements Runnable
 
         for (int i = 0; i < mStrategy.getVoiceVector().size(); i++)
         {
-            System.out.println(mStrategy.getVoiceVector().get(i).toString());
             if(sequence == mStrategy.getVoiceVector().get(i).getSequenceId())
             {
                 sequence++;
@@ -185,14 +192,45 @@ public class ReceiverThread implements Runnable
             }
         }
 
-        System.out.println("Total number of bursts: "+burstCount);
-        System.out.println("Largest burst size: "+largestBurst);
-        System.out.println("Packets Received: "+mStrategy.getVoiceVector().size()+"/"+sampleSize);
-        System.out.println("Total packets lost: "+(sampleSize-mStrategy.getVoiceVector().size()));
-        System.out.println("Finished test receiver.");
+        System.out.println("Total number of bursts: " + burstCount);
+        System.out.println("Largest burst size: " + largestBurst);
+        System.out.println("Packets Received: " + mStrategy.getVoiceVector().size() + "/" + sampleSize);
+        System.out.println("Total packets lost: " + (sampleSize - mStrategy.getVoiceVector().size()));
     }
 
-    public void receiveVoiceTransmission()
+    private void analysePacketOrder()
+    {
+        int orderCount = 0;
+        for (int i = 0; i < mStrategy.getVoiceVector().size() - 1; i++)
+        {
+            if (mStrategy.getVoiceVector().get(i).getSequenceId() >
+                    mStrategy.getVoiceVector().get(i + 1).getSequenceId())
+            {
+                orderCount++;
+            }
+        }
+
+        System.out.println("Total packets out of order: " + orderCount);
+    }
+
+    private void analysePacketCorruption()
+    {
+        int corruptCount = 0;
+
+        for (int i = 0; i < mStrategy.getVoiceVector().size(); i++)
+        {
+            if(mStrategy.getVoiceVector().get(i) == null)
+            {
+                corruptCount++;
+            }
+        }
+
+        mStrategy.getVoiceVector().removeAll(Collections.singleton(null));
+
+        System.out.println("Total packets corrupted: " + corruptCount);
+    }
+
+    private void receiveVoiceTransmission()
     {
         System.out.println("Running voice receiver...");
 

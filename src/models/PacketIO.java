@@ -99,7 +99,7 @@ public class PacketIO
     //Generates a checksum based on the packet header and payload
     private void generateChecksum(VoicePacket packet)
     {
-        int divisor = 128;
+        int divisor = 32;
         int packetTotal = 0;
 
         for (byte a : packet.getPayload())
