@@ -15,8 +15,9 @@ public class Application {
         frame.pack();
         frame.setVisible(true);
         */
-        //192.168.0.21
-        //192.168.0.11
+
+        //192.168.0.21 - Sam
+        //192.168.0.11 - Tom
 
         FillingStrategy fill = new FillingStrategy();
         RepetitionStrategy repeat = new RepetitionStrategy();
@@ -24,11 +25,11 @@ public class Application {
 
         ReceiverThread receiver = new ReceiverThread(repeat, DatagramType.SOCKET4);
         SenderThread sender = new SenderThread("localhost", DatagramType.SOCKET4,
-                TransmissionType.VOICE, true);
+                TransmissionType.TEST, true);
 
         receiver.start();
         sender.start();
-        
+
     }
 
 

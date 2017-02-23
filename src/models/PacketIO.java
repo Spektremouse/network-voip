@@ -69,9 +69,24 @@ public class PacketIO
 
         VoicePacket packet = new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
 
-        packet.setChecksum(checksum);
+        try
+        {
+            generateChecksum(packet);
+        }
+        catch (NullPointerException ex)
+        {
+            return null;
+        }
 
-        return packet;
+        if(packet.getChecksum() == checksum)
+        {
+            return packet;
+        }
+        else
+        {
+            System.out.println("Received checksum:"+checksum+" // Generated Checksum:"+packet.getChecksum());
+            return null;
+        }
     }
 
     //Converts a byte [] into a 32 bit integer.
@@ -81,6 +96,7 @@ public class PacketIO
         return wrapped.getInt();
     }
 
+    //Generates a checksum based on the packet header and payload
     private void generateChecksum(VoicePacket packet)
     {
         int divisor = 128;
@@ -96,6 +112,6 @@ public class PacketIO
 
         packet.setChecksum(packetTotal % divisor);
 
-        System.out.println("Packer #"+packet.getSequenceId()+" checksum equals:"+packet.getChecksum());
+        System.out.println("Packet #"+packet.getSequenceId()+" checksum equals:"+packet.getChecksum());
     }
 }

@@ -136,7 +136,7 @@ public class ReceiverThread implements Runnable
 
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
-                if(vp.getCurrentType() != null)
+                if(vp != null)
                 {
                     mStrategy.getVoiceVector().add(vp);
                     System.out.println("Test packet added to queue!");
@@ -196,7 +196,7 @@ public class ReceiverThread implements Runnable
 
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
-                if(vp.getChecksum() < 128 && vp.getChecksum() > -128)
+                if(vp != null)
                 {
                     mStrategy.getVoiceVector().add(vp);
                 }
