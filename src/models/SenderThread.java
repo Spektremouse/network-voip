@@ -187,9 +187,4 @@ public class SenderThread implements Runnable
         mRecorder.close();
         System.out.println("Finished voice transmission.");
     }
-
-    public void cancel()
-    {
-        Thread.currentThread().stop();
-    }
 }

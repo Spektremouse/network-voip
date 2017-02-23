@@ -318,12 +318,6 @@ public class ReceiverThread implements Runnable
         mPlayer.close();
         System.out.println("Finished voice receiver.");
     }
-
-    public void cancel()
-    {
-        Thread.currentThread().stop();
-        mCallback.onCanceled();
-    }
 }
 
 
