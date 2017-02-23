@@ -1,0 +1,58 @@
+/*** DEFAULT ***/
+gen_f = 3.6143
+gen_t = 3.6143
+
+rep_f = 3.4022
+rep_t = PESQ Not able to align samples
+
+fill_f = PESQ Not able to align samples
+fill_t = 3.6532
+
+
+/*** SOCKET2 ***/
+gen_f = PESQ Not able to align samples
+gen_t = 1.0184
+
+rep_f = PESQ Not able to align samples
+rep_t = PESQ Not able to align samples
+
+fill_f = PESQ Not able to align samples
+fill_t = PESQ Not able to align samples
+
+
+/*** SOCKET3 ***/
+gen_f = PESQ Not able to align samples
+gen_t = 0.8656
+
+rep_f = 1.9677
+rep_t = PESQ Not able to align samples
+
+fill_f = PESQ Not able to align samples
+fill_t = PESQ Not able to align samples
+
+
+/*** SOCKET4 ***/
+gen_f = 1.3059
+gen_t = PESQ Not able to align samples
+
+rep_f = 2.8050
+rep_t = PESQ Not able to align samples
+
+fill_f = 2.0588
+fill_t = 1.7711
+
+
+/*** ERROR ***/
+Subscript indices must either be real positive integers or logicals.
+
+Error in FFTNXCorr (line 6)
+x1= ref_VAD( startr: startr+ nr- 1);
+
+Error in crude_align (line 51)
+    Y= FFTNXCorr( ref_logVAD, startr, nr, deg_logVAD, startd, nd);
+
+Error in utterance_locate (line 10)
+    crude_align( ref_logVAD, ref_Nsamples, deg_logVAD, deg_Nsamples, Utt_id);
+
+Error in pesq (line 106)
+utterance_locate (ref_data, ref_Nsamples, ref_VAD, ref_logVAD,...
