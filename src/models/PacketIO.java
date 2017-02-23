@@ -10,8 +10,8 @@ import java.util.Arrays;
 public class PacketIO
 {
     private int mSequenceId;
-    private final static int HEADER_SIZE = 5;
-    public static final int PACKET_SIZE = 517;
+    private final static int HEADER_SIZE = 6;
+    public static final int PACKET_SIZE = 518;
 
     /**
      * Creates a new instance of the PacketIO object with the sequence identifier starting at 0.
@@ -41,7 +41,11 @@ public class PacketIO
             throw new IllegalArgumentException("Invalid payload size");
         }
 
-        return new VoicePacket(mSequenceId, payload, type);
+        VoicePacket packet = new VoicePacket(mSequenceId, payload, type);
+
+        generateChecksum(packet);
+
+        return packet;
     }
 
     /**
@@ -59,10 +63,15 @@ public class PacketIO
         header[3] = data[3];
         //Single byte used to identify the transmission type.
         int type = data[4];
+        int checksum = data[5];
 
         byte [] payload = Arrays.copyOfRange(data, HEADER_SIZE, data.length);
 
-        return new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
+        VoicePacket packet = new VoicePacket(bytesToInt(header), payload, TransmissionType.get(type));
+
+        packet.setChecksum(checksum);
+
+        return packet;
     }
 
     //Converts a byte [] into a 32 bit integer.
@@ -70,5 +79,23 @@ public class PacketIO
     {
         ByteBuffer wrapped = ByteBuffer.wrap(a);
         return wrapped.getInt();
+    }
+
+    private void generateChecksum(VoicePacket packet)
+    {
+        int divisor = 128;
+        int packetTotal = 0;
+
+        for (byte a : packet.getPayload())
+        {
+            packetTotal += a;
+        }
+
+        packetTotal += packet.getSequenceId();
+        packetTotal += packet.getCurrentType().getCode();
+
+        packet.setChecksum(packetTotal % divisor);
+
+        System.out.println("Packer #"+packet.getSequenceId()+" checksum equals:"+packet.getChecksum());
     }
 }

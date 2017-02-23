@@ -8,6 +8,7 @@ import java.util.Comparator;
 public class VoicePacket implements Comparable<VoicePacket>
 {
     private TransmissionType mCurrentType;
+    private int mChecksum = 0;
     private byte [] mPayload;
     private int mSequenceId;
 
@@ -72,6 +73,24 @@ public class VoicePacket implements Comparable<VoicePacket>
     /**
      *
      * @return
+     */
+    public int getChecksum()
+    {
+        return mChecksum;
+    }
+
+    /**
+     *
+     * @param mChecksum
+     */
+    public void setChecksum(int mChecksum)
+    {
+        this.mChecksum = mChecksum;
+    }
+
+    /**
+     *
+     * @return
      * @throws IOException
      */
     public byte [] toByteArray() throws IOException
@@ -79,6 +98,7 @@ public class VoicePacket implements Comparable<VoicePacket>
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         outputStream.write(intToBytes(mSequenceId));
         outputStream.write(mCurrentType.getCode());
+        outputStream.write(mChecksum);
         outputStream.write(mPayload);
 
         byte [] data = outputStream.toByteArray();
@@ -101,7 +121,7 @@ public class VoicePacket implements Comparable<VoicePacket>
     @Override
     public String toString()
     {
-        return ""+ mSequenceId +"/"+mCurrentType+"/"+mPayload.length;
+        return ""+ mSequenceId +"/"+mCurrentType+"/"+mPayload.length+"/"+mChecksum;
     }
 
     /**

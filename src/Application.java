@@ -1,9 +1,20 @@
 import models.*;
+import views.MainForm;
+
+import javax.swing.*;
 
 public class Application {
 
+
     public static void main(String[] args) throws Exception
     {
+        /*
+        JFrame frame = new JFrame("MainForm");
+        frame.setContentPane(new MainForm().mainPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+        */
         //192.168.0.21
         //192.168.0.11
 
@@ -12,11 +23,13 @@ public class Application {
         GenericStrategy generic = new GenericStrategy();
 
         ReceiverThread receiver = new ReceiverThread(repeat, DatagramType.SOCKET4);
-        SenderThread sender = new SenderThread("192.168.0.21", DatagramType.SOCKET4,
+        SenderThread sender = new SenderThread("localhost", DatagramType.SOCKET4,
                 TransmissionType.VOICE, true);
 
         receiver.start();
         sender.start();
+        
     }
+
 
 }

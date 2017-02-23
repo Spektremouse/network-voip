@@ -173,7 +173,6 @@ public class ReceiverThread implements Runnable
 
         boolean running = true;
         int currentPlace = 0;
-        int timeoutCount = 0;
         boolean isPlayable = true;
 
         while (running)
@@ -197,9 +196,13 @@ public class ReceiverThread implements Runnable
 
                 VoicePacket vp = mPacketiser.unpackPacket(packet.getData());
 
-                if(vp.getCurrentType() != null)
+                if(vp.getChecksum() < 128 && vp.getChecksum() > -128)
                 {
                     mStrategy.getVoiceVector().add(vp);
+                }
+                else
+                {
+                    mStrategy.handlePacketLoss();
                 }
 
                 if(currentPlace == 938)
@@ -210,13 +213,7 @@ public class ReceiverThread implements Runnable
             catch (SocketTimeoutException e)
             {
                 isPlayable = mStrategy.handlePacketLoss();
-                System.out.println("Timeout.");
-                timeoutCount++;
-                if(timeoutCount > 3)
-                {
-                    timeoutCount = 0;
-                    currentPlace--;
-                }
+                //System.out.println("Timeout.");
                 //TODO Handle exception
             }
             catch (IOException ex)
