@@ -67,6 +67,7 @@ public class ReceiverThread implements Runnable
     public void run ()
     {
         System.out.println("Starting receiver...");
+        mCallback.onUpdate("Starting...",0);
 
         System.out.println("Filling initial buffer...");
         while(mStrategy.getVoiceVector().size() < 4)
@@ -97,6 +98,7 @@ public class ReceiverThread implements Runnable
             }
         }
         System.out.println("Initial buffer filled.");
+        mCallback.onUpdate("Initial buffer filled.",0);
 
         switch (mStrategy.getVoiceVector().get(0).getCurrentType())
         {
@@ -115,6 +117,7 @@ public class ReceiverThread implements Runnable
             mReceivingSocket.close();
         }
 
+        mCallback.onUpdate("Complete.",1000);
         System.out.println("Finished receiver.");
         mStrategy.getVoiceVector().clear();
         mCallback.onComplete();
@@ -253,6 +256,7 @@ public class ReceiverThread implements Runnable
     private void receiveVoiceTransmission()
     {
         System.out.println("Running voice receiver...");
+        mCallback.onUpdate("Voice receiver started.",0);
 
         try
         {
@@ -279,6 +283,7 @@ public class ReceiverThread implements Runnable
                 {
                     mPlayer.playBlock(mStrategy.getVoiceVector().get(currentPlace).getPayload());
                     currentPlace++;
+                    mCallback.onUpdate("Call in progress",currentPlace);
                 }
 
                 byte[] data = new byte[mPacketiser.PACKET_SIZE];
@@ -298,8 +303,6 @@ public class ReceiverThread implements Runnable
                 {
                     mStrategy.handlePacketLoss();
                 }
-
-                System.out.println(currentPlace);
 
                 if(currentPlace >= 938)
                 {

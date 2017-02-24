@@ -88,12 +88,11 @@ public class SenderThread implements Runnable
                 throw new InvalidParameterException("Transmission type was not found.");
         }
 
-        /*
         if (!mSendingSocket.isClosed())
         {
             mSendingSocket.close();
         }
-        */
+
         System.out.println("Finished sender.");
     }
 

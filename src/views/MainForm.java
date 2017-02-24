@@ -28,6 +28,7 @@ public class MainForm implements IThreadCallback
     private JTextField txt_host;
     private JRadioButton rbtn_on;
     private JRadioButton rbtn_off;
+    private JProgressBar progressBar;
 
     //Model related stuff
     private IStrategy mStrategy = new GenericStrategy();
@@ -162,6 +163,8 @@ public class MainForm implements IThreadCallback
         socket.add(rbtn_socket3);
         socket.add(rbtn_socket4);
         rbtn_default.setSelected(true);
+
+        progressBar.setMaximum(1000);
     }
 
     @Override
@@ -183,5 +186,11 @@ public class MainForm implements IThreadCallback
     {
         JOptionPane.showMessageDialog(null, "Transmission canceled.");
         btn_connect.setEnabled(true);
+    }
+
+    @Override
+    public void onUpdate(String message, int progress) {
+        progressBar.setValue(progress);
+        progressBar.setStringPainted(true);
     }
 }
